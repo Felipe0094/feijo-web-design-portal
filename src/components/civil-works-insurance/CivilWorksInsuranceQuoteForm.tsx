@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { CurrencyInput } from '@/components/ui/currency-input';
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 // Coverage information tooltips
 const coverageTooltips = {
@@ -196,7 +197,11 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
                     <FormItem>
                       <FormLabel>CPF/CNPJ*</FormLabel>
                       <FormControl>
-                        <Input placeholder="CPF ou CNPJ" {...field} />
+                        <Input 
+                          placeholder="CPF ou CNPJ" 
+                          {...field}
+                          onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -210,7 +215,11 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
                     <FormItem>
                       <FormLabel>Telefone*</FormLabel>
                       <FormControl>
-                        <Input placeholder="(XX) XXXXX-XXXX" {...field} />
+                        <Input 
+                          placeholder="(XX) XXXXX-XXXX" 
+                          {...field}
+                          onChange={(e) => field.onChange(formatPhone(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

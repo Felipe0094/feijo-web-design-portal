@@ -17,6 +17,7 @@ import { TravelInsuranceFormData } from "./types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 // Define the form schema with validation
 const formSchema = z.object({
@@ -171,9 +172,13 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
                   name="cpf"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>CPF</FormLabel>
+                      <FormLabel>CPF*</FormLabel>
                       <FormControl>
-                        <Input placeholder="Digite seu CPF (apenas números)" {...field} />
+                        <Input 
+                          placeholder="000.000.000-00" 
+                          {...field}
+                          onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -187,9 +192,13 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefone</FormLabel>
+                      <FormLabel>Telefone*</FormLabel>
                       <FormControl>
-                        <Input placeholder="(DDD) Número" {...field} />
+                        <Input 
+                          placeholder="(XX) XXXXX-XXXX" 
+                          {...field}
+                          onChange={(e) => field.onChange(formatPhone(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
