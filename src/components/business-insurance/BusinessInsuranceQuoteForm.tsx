@@ -13,7 +13,13 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Building2, User, MapPin, FileText, Shield, Users, Loader2, Phone, Mail, Building, AlertTriangle } from "lucide-react";
+import { Building2, User, MapPin, FileText, Shield, Users, Loader2, Phone, Mail, Building, AlertTriangle, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Form schema with Zod validation
 const formSchema = z.object({
@@ -96,6 +102,35 @@ const additionalInfoOptions = [
   { id: "has_isopanel", label: "Imóvel possui isopainel em sua construção" },
   { id: "is_under_construction", label: "Imóvel em construção ou reforma" },
 ];
+
+// Construction type descriptions
+const constructionTypeDescriptions = {
+  superior: {
+    title: "Superior (Classe 1)",
+    description: "Estrutura: Concreto armado ou aço revestido por concreto ou alvenaria.\n\n" +
+      "Paredes externas: Material incombustível, permitindo até 25% de materiais combustíveis (como PVC ou poliéster).\n\n" +
+      "Pisos e forros: Lajes de concreto; forros incombustíveis ou lajes.\n\n" +
+      "Cobertura: Material incombustível, com até 25% de materiais combustíveis para iluminação.\n\n" +
+      "Instalações elétricas: Embutidas ou aparentes, desde que protegidas adequadamente."
+  },
+  solid: {
+    title: "Sólida (Classe 2)",
+    description: "Paredes externas: Material incombustível, sem revestimentos combustíveis.\n\n" +
+      "Pisos: Madeira ou laje.\n\n" +
+      "Cobertura: Material incombustível, permitindo até 25% de materiais combustíveis.\n\n" +
+      "Outros elementos: Colunas, travejamento, forros e escadas podem ser de qualquer material."
+  },
+  mixed: {
+    title: "Mista (Classe 3)",
+    description: "Paredes externas: Até 25% de material combustível.\n\n" +
+      "Demais elementos: Pisos, colunas, travejamento, forros, escadas e cobertura podem ser de qualquer material."
+  },
+  inferior: {
+    title: "Inferior (Classe 4)",
+    description: "Paredes externas: Mais de 25% de material combustível.\n\n" +
+      "Demais elementos: Pisos, colunas, travejamento, forros, escadas e cobertura podem ser de qualquer material, inclusive combustíveis."
+  }
+};
 
 interface BusinessInsuranceQuoteFormProps {
   onSuccess?: (data: any) => void;
@@ -581,7 +616,27 @@ const BusinessInsuranceQuoteForm = ({
                   name="construction_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Construção*</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <FormLabel>Tipo de Construção*</FormLabel>
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="w-[400px] p-3">
+                              <div className="space-y-3">
+                                {Object.entries(constructionTypeDescriptions).map(([key, value]) => (
+                                  <div key={key} className="space-y-1">
+                                    <h4 className="font-medium text-xs">{value.title}</h4>
+                                    <p className="text-xs whitespace-pre-line leading-relaxed">{value.description}</p>
+                                    {key !== 'inferior' && <Separator className="my-1" />}
+                                  </div>
+                                ))}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
