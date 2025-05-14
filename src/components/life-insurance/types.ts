@@ -1,4 +1,3 @@
-
 export interface LifeInsuranceFormData {
   insurance_type: 'new' | 'renewal';
   full_name: string;
@@ -16,5 +15,9 @@ export interface LifeInsuranceFormData {
   standard_death_coverage: number | null;
   accidental_death_coverage: number | null;
   permanent_disability_coverage: number | null;
+  insurance_coverage: string;
+  insurance_value: number;
+  insurance_installments: number;
+  insurance_beneficiaries: string;
   seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
 }

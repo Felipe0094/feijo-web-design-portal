@@ -1,4 +1,3 @@
-
 import { Database } from '@/integrations/supabase/types';
 
 export type Gender = Database['public']['Enums']['gender'];
@@ -43,6 +42,11 @@ export interface AutoInsuranceFormData {
   driver_marital_status?: MaritalStatus;
   driver_residence_type?: ResidenceType;
   driver_relationship?: string;
+  driver_license_number?: string;
+  driver_license_category?: string;
+  driver_license_expiration?: string;
+  driver_profession?: string;
+  driver_income?: number;
   covers_young_drivers?: boolean;
   condutor_menor?: string;
 
@@ -57,5 +61,5 @@ export interface AutoInsuranceFormData {
   parking_zip_code?: string;
   
   // Seller information
-  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel'; // Updated to include Gabriel
+  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
 }

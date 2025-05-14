@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { User, FileText, DollarSign, Heart, Dumbbell, Clipboard, Loader2 } from 'lucide-react';
 import { LifeInsuranceFormData } from './types';
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 // Format number as currency
 const formatCurrency = (value: number | string) => {
@@ -48,6 +49,10 @@ const formSchema = z.object({
   standard_death_coverage: z.string().optional(),
   accidental_death_coverage: z.string().optional(),
   permanent_disability_coverage: z.string().optional(),
+  insurance_coverage: z.string().min(1, "Cobertura é obrigatória"),
+  insurance_value: z.string().min(1, "Valor do seguro é obrigatório"),
+  insurance_installments: z.string().min(1, "Parcelas é obrigatório"),
+  insurance_beneficiaries: z.string().min(1, "Beneficiários é obrigatório"),
   seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
@@ -80,6 +85,10 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
       accidental_death_coverage: "",
       permanent_disability_coverage: "",
       seller: "Felipe",
+      insurance_coverage: "",
+      insurance_value: "",
+      insurance_installments: "",
+      insurance_beneficiaries: "",
     },
   });
   
@@ -114,6 +123,10 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
         accidental_death_coverage: parseCurrency(values.accidental_death_coverage || ''),
         permanent_disability_coverage: parseCurrency(values.permanent_disability_coverage || ''),
         seller: values.seller,
+        insurance_coverage: values.insurance_coverage,
+        insurance_value: parseCurrency(values.insurance_value),
+        insurance_installments: parseInt(values.insurance_installments),
+        insurance_beneficiaries: values.insurance_beneficiaries,
       };
       
       if (onSuccess) {
@@ -215,15 +228,22 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                 <FormField
                   control={form.control}
                   name="document_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CPF/CNPJ*</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const formatted = formatCpfCnpj(e.target.value);
+                      field.onChange(formatted);
+                    };
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>CPF*</FormLabel>
+                        <FormControl>
+                          <Input {...field} onChange={handleChange} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
               
@@ -245,15 +265,27 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone*</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const formatted = formatPhone(e.target.value);
+                      field.onChange(formatted);
+                    };
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>Telefone*</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            onChange={handleChange}
+                            value={field.value || ''}
+                            placeholder="(99) 99999-9999"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 
                 <FormField
@@ -544,6 +576,129 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Insurance Coverage */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
+                <Clipboard className="text-[#fa0008]" size={20} />
+                Cobertura do Seguro
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="insurance_coverage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cobertura*</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="basica">Básica</SelectItem>
+                            <SelectItem value="intermediaria">Intermediária</SelectItem>
+                            <SelectItem value="completa">Completa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Insurance Value */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
+                <DollarSign className="text-[#fa0008]" size={20} />
+                Valor do Seguro
+              </h3>
+              <div className="grid gap-4 md:grid-cols-3">
+                <FormField
+                  control={form.control}
+                  name="insurance_value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Valor*</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Insurance Installments */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
+                <Clipboard className="text-[#fa0008]" size={20} />
+                Parcelas do Seguro
+              </h3>
+              <div className="grid gap-4 md:grid-cols-3">
+                <FormField
+                  control={form.control}
+                  name="insurance_installments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parcelas*</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="1">1x</SelectItem>
+                            <SelectItem value="2">2x</SelectItem>
+                            <SelectItem value="3">3x</SelectItem>
+                            <SelectItem value="4">4x</SelectItem>
+                            <SelectItem value="5">5x</SelectItem>
+                            <SelectItem value="6">6x</SelectItem>
+                            <SelectItem value="7">7x</SelectItem>
+                            <SelectItem value="8">8x</SelectItem>
+                            <SelectItem value="9">9x</SelectItem>
+                            <SelectItem value="10">10x</SelectItem>
+                            <SelectItem value="11">11x</SelectItem>
+                            <SelectItem value="12">12x</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Insurance Beneficiaries */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
+                <Clipboard className="text-[#fa0008]" size={20} />
+                Beneficiários do Seguro
+              </h3>
+              <div className="grid gap-4 md:grid-cols-3">
+                <FormField
+                  control={form.control}
+                  name="insurance_beneficiaries"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Beneficiários*</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="text-center pt-6">

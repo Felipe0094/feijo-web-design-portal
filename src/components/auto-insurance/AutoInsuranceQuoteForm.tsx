@@ -18,6 +18,7 @@ import { AutoInsuranceFormData } from "./types";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { User, CarFront, Home, FileText, Users, Loader2 } from "lucide-react";
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 const formSchema = z.object({
   document_number: z.string().min(1, "CPF/CNPJ é obrigatório"),
@@ -63,6 +64,11 @@ const formSchema = z.object({
   driver_marital_status: z.enum(["single", "married", "divorced", "widowed", "other"]).optional(),
   driver_gender: z.enum(["male", "female", "other"]).optional(),
   driver_relationship: z.string().optional(),
+  driver_license_number: z.string().optional(),
+  driver_license_category: z.string().optional(),
+  driver_license_expiration: z.string().optional(),
+  driver_profession: z.string().optional(),
+  driver_income: z.number().optional(),
   seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
@@ -106,6 +112,11 @@ const AutoInsuranceQuoteForm = ({
       driver_marital_status: undefined,
       driver_gender: undefined,
       driver_relationship: undefined,
+      driver_license_number: undefined,
+      driver_license_category: undefined,
+      driver_license_expiration: undefined,
+      driver_profession: undefined,
+      driver_income: undefined,
       seller: "Felipe",
     },
   });
@@ -177,6 +188,11 @@ const AutoInsuranceQuoteForm = ({
           driver_marital_status: values.driver_marital_status,
           driver_gender: values.driver_gender,
           driver_relationship: values.driver_relationship,
+          driver_license_number: values.driver_license_number,
+          driver_license_category: values.driver_license_category,
+          driver_license_expiration: values.driver_license_expiration,
+          driver_profession: values.driver_profession,
+          driver_income: values.driver_income,
         };
         
         onSuccess(formData);

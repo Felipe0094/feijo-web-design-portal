@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 // Form schema with Zod validation
 const formSchema = z.object({
@@ -383,15 +384,27 @@ const BusinessInsuranceQuoteForm = ({
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(00) 00000-0000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const formatted = formatPhone(e.target.value);
+                      field.onChange(formatted);
+                    };
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>Telefone*</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            onChange={handleChange}
+                            value={field.value || ''}
+                            placeholder="(99) 99999-9999"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 
                 <FormField
@@ -411,24 +424,26 @@ const BusinessInsuranceQuoteForm = ({
                 <FormField
                   control={form.control}
                   name="cnpj"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CNPJ*</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="00.000.000/0000-00" 
-                          {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            if (e.target.value.length === 18) {
-                              handleCnpjSearch(e.target.value);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const formatted = formatCpfCnpj(e.target.value);
+                      field.onChange(formatted);
+                    };
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>CNPJ*</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            onChange={handleChange}
+                            value={field.value || ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 
                 <FormField

@@ -3,40 +3,14 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormContext } from "react-hook-form";
-
-// Função para formatar CPF ou CNPJ
-function formatCpfCnpj(value: string) {
-  value = value.replace(/\D/g, "");
-  if (value.length <= 11) {
-    // Formatar como CPF
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  } else {
-    // Formatar como CNPJ
-    value = value.replace(/^(\d{2})(\d)/, "$1.$2");
-    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
-    value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
-    value = value.replace(/(\d{4})(\d)/, "$1-$2");
-  }
-  return value;
-}
-
-// Função para formatar telefone
-function formatPhone(value: string) {
-  value = value.replace(/\D/g, ""); // Remove tudo que não for número
-  if (value.length > 11) value = value.slice(0, 11); // Limitar no máximo 11 dígitos
-  value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
-  value = value.replace(/(\d{5})(\d)/, "$1-$2");
-  return value;
-}
+import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
 
 export const PersonalInfoSection = () => {
   const form = useFormContext();
   
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <FormField
           control={form.control}
           name="full_name"
@@ -56,7 +30,7 @@ export const PersonalInfoSection = () => {
           name="document_number"
           render={({ field }) => {
             const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-              const formatted = formatCpfCnpj(e.target.value.replace(/\D/g, ''));
+              const formatted = formatCpfCnpj(e.target.value);
               field.onChange(formatted);
             }, [field]);
             
@@ -70,30 +44,6 @@ export const PersonalInfoSection = () => {
               </FormItem>
             );
           }}
-        />
-        
-        <FormField
-          control={form.control}
-          name="seller"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Vendedor/Corretor*</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o vendedor" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="Felipe">Felipe</SelectItem>
-                  <SelectItem value="Renan">Renan</SelectItem>
-                  <SelectItem value="Renata">Renata</SelectItem>
-                  <SelectItem value="Gabriel">Gabriel</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
         />
       </div>
 
@@ -217,7 +167,7 @@ export const PersonalInfoSection = () => {
                 <SelectContent>
                   <SelectItem value="house">Casa</SelectItem>
                   <SelectItem value="apartment">Apartamento</SelectItem>
-                  <SelectItem value="condominium">Casa em Condomínio</SelectItem>
+                  <SelectItem value="condominium">Condomínio</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
