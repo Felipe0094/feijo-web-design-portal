@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import topoImage from '../../public/topo.png';
-import topoMobileImage from "../../public/topo-mobile.png";
-
 const HeroSection = () => {
     const [isDesktopImageLoaded, setIsDesktopImageLoaded] = useState(false);
     const [isMobileImageLoaded, setIsMobileImageLoaded] = useState(false);
@@ -12,12 +9,12 @@ const HeroSection = () => {
         const preloadImages = () => {
             const imgDesktop = new Image();
             imgDesktop.onload = () => setIsDesktopImageLoaded(true);
-            imgDesktop.src = topoImage;
+            imgDesktop.src = '/topo.png';
             imgDesktop.fetchPriority = "high";
             
             const imgMobile = new Image();
             imgMobile.onload = () => setIsMobileImageLoaded(true);
-            imgMobile.src = topoMobileImage;
+            imgMobile.src = '/topo-mobile.png';
             imgMobile.fetchPriority = "high";
         };
         
@@ -42,7 +39,7 @@ const HeroSection = () => {
                             <div className="animate-pulse bg-gray-200 h-[320px] w-full rounded-md" />
                         )}
                         <img 
-                            src={topoImage} 
+                            src="/topo.png" 
                             alt="Hero image desktop" 
                             className={`object-cover h-[320px] mx-auto transition-opacity duration-300 ${isDesktopImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             loading="eager"
@@ -57,7 +54,7 @@ const HeroSection = () => {
                             <div className="animate-pulse bg-gray-200 h-[131px] w-full rounded-md" />
                         )}
                         <img 
-                            src={topoMobileImage} 
+                            src="/topo-mobile.png" 
                             alt="Hero image mobile" 
                             className={`object-cover h-[122px] mx-auto transition-opacity duration-300 ${isMobileImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             loading="eager"
