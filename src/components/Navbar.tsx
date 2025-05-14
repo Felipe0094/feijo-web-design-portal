@@ -101,7 +101,7 @@ const Navbar = () => {
       
       {/* Mobile Navigation Menu */}
       {isOpen && (    
-        <div className="md:hidden bg-feijo-lightgray">
+        <div className="md:hidden bg-white">
           <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
             <a href="/#" className="text-feijo-darkgray hover:text-feijo-red transition-colors font-medium py-2 text-sm">
               Início

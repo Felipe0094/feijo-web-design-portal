@@ -8,18 +8,29 @@ const HeroSection = () => {
     const [isMobileImageLoaded, setIsMobileImageLoaded] = useState(false);
 
     useEffect(() => {
-        // Preload hero images
+        // Preload hero images with highest priority
         const preloadImages = () => {
             const imgDesktop = new Image();
             imgDesktop.onload = () => setIsDesktopImageLoaded(true);
             imgDesktop.src = topoImage;
+            imgDesktop.fetchPriority = "high";
             
             const imgMobile = new Image();
             imgMobile.onload = () => setIsMobileImageLoaded(true);
             imgMobile.src = topoMobileImage;
+            imgMobile.fetchPriority = "high";
         };
         
+        // Iniciar o preload imediatamente
         preloadImages();
+
+        // Adicionar um fallback para garantir que as imagens sejam exibidas mesmo se o preload falhar
+        const timeoutId = setTimeout(() => {
+            setIsDesktopImageLoaded(true);
+            setIsMobileImageLoaded(true);
+        }, 2000);
+
+        return () => clearTimeout(timeoutId);
     }, []);
 
     return (
@@ -32,11 +43,13 @@ const HeroSection = () => {
                         )}
                         <img 
                             src={topoImage} 
-                            alt="topo" 
+                            alt="Hero image desktop" 
                             className={`object-cover h-[320px] mx-auto transition-opacity duration-300 ${isDesktopImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             loading="eager"
                             width={800}
                             height={320}
+                            decoding="async"
+                            fetchPriority="high"
                         />
                     </div>
                     <div className='block md:hidden'>
@@ -45,11 +58,13 @@ const HeroSection = () => {
                         )}
                         <img 
                             src={topoMobileImage} 
-                            alt="topo" 
+                            alt="Hero image mobile" 
                             className={`object-cover h-[122px] mx-auto transition-opacity duration-300 ${isMobileImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             loading="eager"
                             width={400}
                             height={131}
+                            decoding="async"
+                            fetchPriority="high"
                         />
                     </div>
                     <div className="text-left flex flex-col justify-center z-10">
