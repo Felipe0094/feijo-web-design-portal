@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { Calendar as CalendarIcon, FileText, Info, Plane, Users, Loader2 } from "lucide-react";
 import { submitTravelQuote } from "./submitQuote";
 import { toast } from "sonner";
@@ -319,7 +320,7 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
                               className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(new Date(field.value), "PPP", { locale: ptBR })
                               ) : (
                                 <span>Selecione a data</span>
                               )}
@@ -356,7 +357,7 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
                               className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(new Date(field.value), "PPP", { locale: ptBR })
                               ) : (
                                 <span>Selecione a data</span>
                               )}
