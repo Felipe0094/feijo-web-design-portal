@@ -1,19 +1,22 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plane } from 'lucide-react';
+import { Plane, MessageSquare, Loader2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import TravelInsuranceQuoteForm from '@/components/travel-insurance/TravelInsuranceQuoteForm';
 import { toast } from "sonner";
-import { supabase } from '@/integrations/supabase/client';
+import { submitTravelQuote } from '@/components/travel-insurance/submitQuote';
 import { useNavigate } from 'react-router-dom';
 import { TravelInsuranceFormData } from '@/components/travel-insurance/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const TravelInsurance = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [policyFile, setPolicyFile] = useState<File | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [quoteData, setQuoteData] = useState<any>(null);
   const navigate = useNavigate();
 
   const handleFileChange = (file: File | null) => {
@@ -23,42 +26,19 @@ const TravelInsurance = () => {
   const handleFormSubmit = async (formData: TravelInsuranceFormData) => {
     setIsSubmitting(true);
     try {
-      // Submit the form data to Supabase - using column names that match exactly with the database schema
-      const { error } = await supabase
-        .from('travel_insurance_quotes')
-        .insert({
-          full_name: formData.fullName,
-          cpf: formData.cpf,
-          phone: formData.phone,
-          email: formData.email,
-          trip_type: formData.tripType,
-          destination: formData.destination,
-          purpose: formData.purpose,
-          departure_date: formData.departureDate,
-          return_date: formData.returnDate,
-          motorcycle_use: formData.motorcycleUse,
-          passengers_0_to_64: formData.passengers0to64,
-          passengers_65_to_70: formData.passengers65to70,
-          passengers_71_to_85: formData.passengers71to85,
-          seller: formData.seller
-        });
+      const result = await submitTravelQuote(formData);
+      
+      if (result.success) {
+        // Save quote data for the dialog
+        setQuoteData(formData);
+        setShowDialog(true);
         
-      if (error) throw new Error(error.message);
-      
-      // Show success toast and ask if they want to contact a consultant
-      toast.success("Cotação enviada com sucesso!", {
-        description: "Nossa equipe entrará em contato em breve.",
-        action: {
-          label: "Falar com consultor",
-          onClick: () => {
-            const message = `Olá! Acabei de solicitar uma cotação de seguro viagem e gostaria de mais informações.`;
-            const phone = "+5511999999999"; // Replace with actual consultant phone
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
-          }
-        }
-      });
-      
-      navigate('/');
+        toast.success("Cotação enviada com sucesso!", {
+          description: "Nossa equipe entrará em contato em breve."
+        });
+      } else {
+        throw new Error((result.error as Error).message);
+      }
     } catch (error: any) {
       console.error("Error submitting form:", error);
       toast.error("Erro ao enviar cotação", {
@@ -67,6 +47,40 @@ const TravelInsurance = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSendWhatsapp = async () => {
+    if (!quoteData) return;
+    
+    let phoneNumber = "";
+    
+    switch (quoteData.seller) {
+      case "Felipe":
+        phoneNumber = "5521972110705"; // Phone number for Felipe
+        break;
+      case "Renan":
+        phoneNumber = "5522988521503";
+        break;
+      case "Renata":
+        phoneNumber = "5511994150565";
+        break;
+      case "Gabriel":
+        phoneNumber = "5522999210343"; // Phone number for Gabriel
+        break;
+      default:
+        phoneNumber = "5521972110705"; // Default number
+    }
+    
+    let message = encodeURIComponent(
+      `Olá ${quoteData.seller}, acabei de enviar meus dados para cotação de seguro viagem no site da Feijó Corretora.\n\n` +
+      `Nome: ${quoteData.fullName}\n` +
+      `CPF: ${quoteData.cpf}\n` +
+      `Email: ${quoteData.email}\n`
+    );
+    
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    setShowDialog(false);
+    toast.success("Obrigado pelo contato!");
   };
 
   return (
@@ -115,6 +129,29 @@ const TravelInsurance = () => {
         </div>
       </main>
       <Footer />
+      
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Enviar mensagem para o consultor</DialogTitle>
+            <DialogDescription>
+              Deseja enviar uma mensagem para {quoteData?.seller} e informar que já enviou os dados para a cotação?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Não enviar
+            </Button>
+            <Button 
+              className="bg-[#FA0108] hover:bg-red-700"
+              onClick={handleSendWhatsapp}
+            >
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Enviar via WhatsApp
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
