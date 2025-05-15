@@ -23,36 +23,7 @@ const TravelInsurance = () => {
   const handleFormSubmit = async (formData: TravelInsuranceFormData) => {
     setIsSubmitting(true);
     try {
-      let policyFilePath = null;
-      
-      // Upload policy file if exists
-      if (policyFile) {
-        const fileExt = policyFile.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `travel_insurance/${fileName}`;
-        
-        // Create storage bucket if it doesn't exist
-        const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('insurance_documents');
-        if (!bucketData) {
-          await supabase.storage.createBucket('insurance_documents', {
-            public: false,
-            allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-            fileSizeLimit: 10485760, // 10MB
-          });
-        }
-        
-        const { error: uploadError } = await supabase.storage
-          .from('insurance_documents')
-          .upload(filePath, policyFile);
-          
-        if (uploadError) {
-          throw new Error(`Error uploading file: ${uploadError.message}`);
-        }
-        
-        policyFilePath = filePath;
-      }
-      
-      // Submit the form data to Supabase - using correct column names
+      // Submit the form data to Supabase - using column names that match exactly with the database schema
       const { error } = await supabase
         .from('travel_insurance_quotes')
         .insert({
@@ -69,8 +40,7 @@ const TravelInsurance = () => {
           passengers_0_to_64: formData.passengers0to64,
           passengers_65_to_70: formData.passengers65to70,
           passengers_71_to_85: formData.passengers71to85,
-          seller: formData.seller,
-          policy_file_path: policyFilePath
+          seller: formData.seller
         });
         
       if (error) throw new Error(error.message);
