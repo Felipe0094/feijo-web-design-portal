@@ -336,10 +336,10 @@ const AutoInsuranceQuoteForm = ({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Felipe">Felipe</SelectItem>
+                        <SelectItem value="Gabriel">Gabriel</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>
                         <SelectItem value="Renata">Renata</SelectItem>
-                        <SelectItem value="Gabriel">Gabriel</SelectItem>
-                      </SelectContent>
+                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
