@@ -56,7 +56,7 @@ const HeroSection = () => {
                         <img 
                             src="/topo-mobile.png" 
                             alt="Hero image mobile" 
-                            className={`object-cover h-[122px] mx-auto transition-opacity duration-300 ${isMobileImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            className={`object-cover h-[120px] mx-auto transition-opacity duration-300 ${isMobileImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             loading="eager"
                             width={400}
                             height={131}
