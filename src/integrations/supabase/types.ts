@@ -165,6 +165,90 @@ export type Database = {
         }
         Relationships: []
       }
+      business_insurance_quotes: {
+        Row: {
+          additional_info: Json | null
+          city: string
+          cnpj: string
+          company_name: string
+          complement: string | null
+          construction_type: string
+          coverage_options: Json
+          created_at: string
+          document_number: string
+          email: string
+          fire_equipment: Json | null
+          full_name: string
+          id: string
+          insurance_type: string
+          main_activity: string
+          neighborhood: string
+          number: string
+          phone: string
+          policy_file_path: string | null
+          security_equipment: Json | null
+          seller: string | null
+          state: string
+          status: string | null
+          street: string
+          zip_code: string
+        }
+        Insert: {
+          additional_info?: Json | null
+          city: string
+          cnpj: string
+          company_name: string
+          complement?: string | null
+          construction_type: string
+          coverage_options: Json
+          created_at?: string
+          document_number: string
+          email: string
+          fire_equipment?: Json | null
+          full_name: string
+          id?: string
+          insurance_type: string
+          main_activity: string
+          neighborhood: string
+          number: string
+          phone: string
+          policy_file_path?: string | null
+          security_equipment?: Json | null
+          seller?: string | null
+          state: string
+          status?: string | null
+          street: string
+          zip_code: string
+        }
+        Update: {
+          additional_info?: Json | null
+          city?: string
+          cnpj?: string
+          company_name?: string
+          complement?: string | null
+          construction_type?: string
+          coverage_options?: Json
+          created_at?: string
+          document_number?: string
+          email?: string
+          fire_equipment?: Json | null
+          full_name?: string
+          id?: string
+          insurance_type?: string
+          main_activity?: string
+          neighborhood?: string
+          number?: string
+          phone?: string
+          policy_file_path?: string | null
+          security_equipment?: Json | null
+          seller?: string | null
+          state?: string
+          status?: string | null
+          street?: string
+          zip_code?: string
+        }
+        Relationships: []
+      }
       civil_works_insurance_quotes: {
         Row: {
           basement_count: number
@@ -599,96 +683,6 @@ export type Database = {
           seller?: string
           status?: string
           trip_type?: string
-        }
-        Relationships: []
-      }
-      business_insurance_quotes: {
-        Row: {
-          id: string
-          created_at: string
-          insurance_type: string
-          full_name: string
-          phone: string
-          email: string
-          cnpj: string
-          company_name: string
-          zip_code: string
-          street: string
-          number: string
-          complement: string | null
-          neighborhood: string
-          city: string
-          state: string
-          floor: string
-          construction_year: string
-          construction_type: string
-          location_type: string
-          security_equipment: Json | null
-          fire_equipment: Json | null
-          main_activity: string
-          additional_info: Json | null
-          coverage_options: Json
-          policy_file_path: string | null
-          seller: string
-          status: string
-        }
-        Insert: {
-          id?: string
-          created_at?: string
-          insurance_type: string
-          full_name: string
-          phone: string
-          email: string
-          cnpj: string
-          company_name: string
-          zip_code: string
-          street: string
-          number: string
-          complement?: string | null
-          neighborhood: string
-          city: string
-          state: string
-          floor: string
-          construction_year: string
-          construction_type: string
-          location_type: string
-          security_equipment?: Json | null
-          fire_equipment?: Json | null
-          main_activity: string
-          additional_info?: Json | null
-          coverage_options: Json
-          policy_file_path?: string | null
-          seller?: string
-          status?: string
-        }
-        Update: {
-          id?: string
-          created_at?: string
-          insurance_type?: string
-          full_name?: string
-          phone?: string
-          email?: string
-          cnpj?: string
-          company_name?: string
-          zip_code?: string
-          street?: string
-          number?: string
-          complement?: string | null
-          neighborhood?: string
-          city?: string
-          state?: string
-          floor?: string
-          construction_year?: string
-          construction_type?: string
-          location_type?: string
-          security_equipment?: Json | null
-          fire_equipment?: Json | null
-          main_activity?: string
-          additional_info?: Json | null
-          coverage_options?: Json
-          policy_file_path?: string | null
-          seller?: string
-          status?: string
         }
         Relationships: []
       }

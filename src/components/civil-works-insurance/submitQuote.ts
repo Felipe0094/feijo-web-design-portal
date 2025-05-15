@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { CivilWorksInsuranceFormData } from "./types";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { CivilWorksInsuranceFormSchemaType } from "./schema";
 
 export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFormSchemaType) => {
@@ -29,7 +29,7 @@ export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFo
       upper_floors_count: data.upper_floors_count,
       basement_count: data.basement_count,
       has_grounding_service: data.has_grounding_service,
-      structure_types: JSON.stringify(data.structure_types),
+      structure_types: typeof data.structure_types === 'object' ? JSON.stringify(data.structure_types) : data.structure_types,
       demolition_type: data.demolition_type,
       has_tie_rods: data.has_tie_rods,
       has_adjacent_buildings: data.has_adjacent_buildings,
@@ -38,37 +38,64 @@ export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFo
       has_terrain_containment: data.has_terrain_containment,
       has_structural_reinforcement: data.has_structural_reinforcement,
       contractors_count: data.contractors_count,
-      coverage_options: JSON.stringify(data.coverage_options),
+      coverage_options: typeof data.coverage_options === 'object' ? JSON.stringify(data.coverage_options) : data.coverage_options,
       seller: data.seller
     };
 
     // Insert the formatted data into Supabase
-    const { error } = await supabase
+    const { error, data: insertedData } = await supabase
       .from('civil_works_insurance_quotes')
-      .insert(formattedData);
+      .insert(formattedData)
+      .select();
 
     if (error) {
       console.error('Error submitting quote:', error);
-      toast({
-        title: "Erro ao enviar cotação",
-        description: "Por favor, tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
       return { success: false, error };
     }
 
-    toast({
-      title: "Cotação enviada com sucesso!",
-      description: "Em breve entraremos em contato.",
-    });
-    return { success: true };
+    try {
+      // Clean values for email - remove undefined and special type objects
+      const cleanValues = Object.fromEntries(
+        Object.entries(data).filter(([_, v]) => {
+          if (v === undefined) return false;
+          if (v !== null && typeof v === 'object' && '_type' in v) return false;
+          return true;
+        })
+      );
+
+      // Send email notification
+      console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
+      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-insurance-quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
+        },
+        body: JSON.stringify({ 
+          quoteData: cleanValues,
+          quoteType: 'civil-works'
+        })
+      });
+      
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error("Email response not OK:", errorText);
+        // Continue with the operation even if email sending fails
+      } else {
+        const emailResult = await emailResponse.json();
+        console.log("Email sending result:", emailResult);
+      }
+    } catch (emailError) {
+      console.error("Erro ao enviar email:", emailError);
+      // Continue with the operation even if email sending fails
+    }
+
+    toast.success("Cotação enviada com sucesso! Em breve entraremos em contato.");
+    return { success: true, data: insertedData };
   } catch (error: any) {
     console.error('Exception when submitting quote:', error);
-    toast({
-      title: "Erro ao enviar cotação",
-      description: "Por favor, tente novamente mais tarde.",
-      variant: "destructive",
-    });
+    toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
     return { success: false, error };
   }
 };
