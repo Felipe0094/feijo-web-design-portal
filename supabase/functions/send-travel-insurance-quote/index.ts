@@ -39,6 +39,10 @@ serve(async (req) => {
 
     const quote = quotes[0];
     
+    // Format the trip type and purpose for email
+    const tripTypeText = quote.trip_type === "national" ? "Nacional" : "Internacional";
+    const purposeText = quote.purpose === "business" ? "Negócios" : "Turismo/Lazer";
+    
     // For now, just log the email that would be sent
     console.log(`
       Email would be sent with the following information:
@@ -48,9 +52,9 @@ serve(async (req) => {
       Telefone: ${quote.phone}
       Email: ${quote.email}
       
-      Tipo de Viagem: ${quote.trip_type === "national" ? "Nacional" : "Internacional"}
+      Tipo de Viagem: ${tripTypeText}
       Destino: ${quote.destination}
-      Finalidade: ${quote.purpose === "business" ? "Negócios" : "Turismo/Lazer"}
+      Finalidade: ${purposeText}
       Data de Saída: ${new Date(quote.departure_date).toLocaleDateString('pt-BR')}
       Data de Retorno: ${new Date(quote.return_date).toLocaleDateString('pt-BR')}
       Utilizará Moto: ${quote.motorcycle_use ? "Sim" : "Não"}

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 export const submitTravelQuote = async (data: TravelInsuranceFormData) => {
   try {
+    // Map camelCase fields to snake_case columns
     const { error } = await supabase
       .from('travel_insurance_quotes')
       .insert({

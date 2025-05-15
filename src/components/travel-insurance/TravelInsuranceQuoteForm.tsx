@@ -58,18 +58,12 @@ const destinations = [
   "Multidestino sem Europa"
 ];
 
+// Updated list of consultants as requested
 const consultants = [
   "Felipe",
-  "Ana",
-  "Carlos",
-  "Mariana",
-  "João",
-  "Patrícia",
-  "Roberto",
-  "Débora",
-  "Renan",
-  "Renata",
-  "Gabriel"
+  "Gabriel", 
+  "Renan", 
+  "Renata"
 ];
 
 interface TravelInsuranceQuoteFormProps {

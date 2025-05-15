@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plane } from 'lucide-react';
@@ -8,6 +9,7 @@ import TravelInsuranceQuoteForm from '@/components/travel-insurance/TravelInsura
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { TravelInsuranceFormData } from '@/components/travel-insurance/types';
 
 const TravelInsurance = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +20,7 @@ const TravelInsurance = () => {
     setPolicyFile(file);
   };
 
-  const handleFormSubmit = async (formData: any) => {
+  const handleFormSubmit = async (formData: TravelInsuranceFormData) => {
     setIsSubmitting(true);
     try {
       let policyFilePath = null;
@@ -50,21 +52,48 @@ const TravelInsurance = () => {
         policyFilePath = filePath;
       }
       
-      // Submit the form data to Supabase
+      // Submit the form data to Supabase - using correct column names
       const { error } = await supabase
         .from('travel_insurance_quotes')
         .insert({
-          ...formData,
+          full_name: formData.fullName,
+          cpf: formData.cpf,
+          phone: formData.phone,
+          email: formData.email,
+          trip_type: formData.tripType,
+          destination: formData.destination,
+          purpose: formData.purpose,
+          departure_date: formData.departureDate,
+          return_date: formData.returnDate,
+          motorcycle_use: formData.motorcycleUse,
+          passengers_0_to_64: formData.passengers0to64,
+          passengers_65_to_70: formData.passengers65to70,
+          passengers_71_to_85: formData.passengers71to85,
+          seller: formData.seller,
           policy_file_path: policyFilePath
         });
         
       if (error) throw new Error(error.message);
       
-      toast.success("Cotação enviada com sucesso! Nossa equipe entrará em contato em breve.");
+      // Show success toast and ask if they want to contact a consultant
+      toast.success("Cotação enviada com sucesso!", {
+        description: "Nossa equipe entrará em contato em breve.",
+        action: {
+          label: "Falar com consultor",
+          onClick: () => {
+            const message = `Olá! Acabei de solicitar uma cotação de seguro viagem e gostaria de mais informações.`;
+            const phone = "+5511999999999"; // Replace with actual consultant phone
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+          }
+        }
+      });
+      
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting form:", error);
-      toast.error("Erro ao enviar cotação. Por favor, tente novamente.");
+      toast.error("Erro ao enviar cotação", {
+        description: error.message
+      });
     } finally {
       setIsSubmitting(false);
     }
