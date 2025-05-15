@@ -21,7 +21,9 @@ serve(async (req) => {
       throw new Error('Missing authorization header');
     }
 
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    // Use the API key from environment variables
+    const resendApiKey = "re_2hAktQX4_MZFwiUSRBdNzge3oSxXAqnkh"; // Hardcoded for now as it's the same key used in other functions
+    const resend = new Resend(resendApiKey);
     
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
