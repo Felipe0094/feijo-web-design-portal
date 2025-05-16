@@ -82,7 +82,7 @@ serve(async (req) => {
 
     // Send email using Resend
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: "Feijó Corretora <cotacoes@feijoinsurance.com>",
+      from: "Cotações <onboarding@resend.dev>", // Using Resend's default verified sender
       to: ["cotacoes.feijocorretora@gmail.com"],
       subject: `Nova Cotação de Seguro Viagem - ${quote.full_name}`,
       html: emailContent
