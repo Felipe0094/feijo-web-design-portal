@@ -486,7 +486,7 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
               />
             </div>
             
-            <div className="pt-6">
+            <div className="text-center pt-6">
               <Button 
                 type="submit" 
                 className="bg-[#FA0108] hover:bg-red-600 text-white px-8 py-6 text-lg rounded-md"
