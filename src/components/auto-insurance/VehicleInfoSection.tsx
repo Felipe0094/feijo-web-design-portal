@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -62,11 +63,11 @@ export const VehicleInfoSection = () => {
               <FormLabel>Ano de Fabricação</FormLabel>
               <FormControl>
                 <Input
-                  {...field}
                   value={field.value || ''}
                   onChange={(e) => {
                     const formattedValue = formatYearInput(e.target.value);
-                    field.onChange(formattedValue);
+                    // Convert to number before setting the value
+                    field.onChange(formattedValue ? parseInt(formattedValue) : undefined);
                   }}
                   placeholder="9999"
                   maxLength={4}
