@@ -41,9 +41,9 @@ export async function submitHomeInsuranceQuote(
         })
       );
 
-      // Send email notification
+      // Send email notification using edge function
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
-      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-insurance-quote', {
+      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-home-insurance-quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

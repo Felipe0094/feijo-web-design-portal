@@ -1,10 +1,12 @@
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.24.0'
-import { corsHeaders } from '../_shared/cors.ts'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.36.0";
+import { Resend } from "https://esm.sh/resend@2.0.0";
+import { corsHeaders } from "../_shared/cors.ts";
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -15,34 +17,20 @@ Deno.serve(async (req) => {
       throw new Error('Missing authorization header');
     }
 
+    // Use the API key from environment variables
+    const resendApiKey = "re_2hAktQX4_MZFwiUSRBdNzge3oSxXAqnkh"; // Hardcoded for now as it's the same key used in other functions
+    const resend = new Resend(resendApiKey);
+    
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
+
+    // Get request data
+    const { quoteData, quoteType, policyFile } = await req.json();
     
-    const { data, error } = await req.json();
-    
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (!data || !data.id) {
-      throw new Error("Missing quote data or quote id");
-    }
-
-    // Fetch the home insurance quote data
-    const { data: quoteData, error: fetchError } = await supabaseClient
-      .from("home_insurance_quotes")
-      .select("*")
-      .eq("id", data.id)
-      .single();
-
-    if (fetchError) {
-      throw new Error(`Error fetching quote: ${fetchError.message}`);
-    }
-
     if (!quoteData) {
-      throw new Error("Quote not found");
+      throw new Error("Missing quote data");
     }
 
     // Format security equipment
@@ -82,38 +70,72 @@ Deno.serve(async (req) => {
       }).format(value);
     };
 
-    // Update quote status to "email_sent"
-    await supabaseClient
-      .from("home_insurance_quotes")
-      .update({ status: "email_sent" })
-      .eq("id", data.id);
+    // Create email content
+    const emailContent = `
+      <h2>Nova Cotação de Seguro Residencial</h2>
+      
+      <h3>Dados do Cliente:</h3>
+      <p><strong>Nome:</strong> ${quoteData.full_name}</p>
+      <p><strong>CPF/CNPJ:</strong> ${quoteData.document_number}</p>
+      <p><strong>Telefone:</strong> ${quoteData.phone}</p>
+      <p><strong>Email:</strong> ${quoteData.email}</p>
+      
+      <h3>Dados do Imóvel:</h3>
+      <p><strong>Tipo de Residência:</strong> ${quoteData.residence_type === "house" ? "Casa" : "Apartamento"}</p>
+      <p><strong>Tipo de Construção:</strong> ${quoteData.construction_type}</p>
+      <p><strong>Tipo de Ocupação:</strong> ${quoteData.occupation_type === "habitual" ? "Habitual" : "Veraneio"}</p>
+      
+      <h3>Endereço:</h3>
+      <p>${quoteData.street}, ${quoteData.number}${quoteData.complement ? `, ${quoteData.complement}` : ''}</p>
+      <p>${quoteData.neighborhood}, ${quoteData.city} - ${quoteData.state}</p>
+      <p>CEP: ${quoteData.zip_code}</p>
+      
+      ${securityEquipmentText ? `<h3>Equipamentos de Segurança:</h3><p>${securityEquipmentText.replace(/\n/g, '<br>')}</p>` : ''}
+      
+      ${additionalDataText ? `<h3>Dados Adicionais:</h3><p>${additionalDataText.replace(/\n/g, '<br>')}</p>` : ''}
+      
+      <h3>Valores de Cobertura:</h3>
+      <p><strong>Valor do imóvel:</strong> ${formatCurrency(quoteData.insured_value)}</p>
+      <p><strong>Danos elétricos:</strong> ${formatCurrency(quoteData.electrical_damage_value)}</p>
+      <p><strong>Quebra de vidros:</strong> ${formatCurrency(quoteData.glass_value)}</p>
+      <p><strong>Alagamento:</strong> ${formatCurrency(quoteData.flooding_value)}</p>
+      <p><strong>Vazamento de tubulações:</strong> ${formatCurrency(quoteData.pipe_leakage_value)}</p>
+      <p><strong>Roubo/furto:</strong> ${formatCurrency(quoteData.theft_value)}</p>
+      
+      <p><strong>Vendedor/Consultor:</strong> ${quoteData.seller}</p>
+    `;
+
+    // Send email using Resend
+    const { data: emailData, error: emailError } = await resend.emails.send({
+      from: "Cotações <onboarding@resend.dev>", // Using Resend's default verified sender
+      to: ["cotacoes.feijocorretora@gmail.com"],
+      subject: `Nova Cotação de Seguro Residencial - ${quoteData.full_name}`,
+      html: emailContent
+    });
+
+    if (emailError) {
+      console.error("Error sending email:", emailError);
+      throw emailError;
+    }
+    
+    console.log("Email sent successfully:", emailData);
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Email enviado com sucesso"
-      }),
+      JSON.stringify({ success: true, message: "Email sent successfully" }),
       {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
-      },
+      }
     );
   } catch (error) {
+    console.error("Error processing request:", error);
+    
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-      }),
+      JSON.stringify({ success: false, error: error.message }),
       {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
-      },
+      }
     );
   }
 });
