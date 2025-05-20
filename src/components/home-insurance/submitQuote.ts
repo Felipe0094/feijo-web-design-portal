@@ -2,17 +2,50 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { HomeInsuranceFormData } from "./types";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 export async function submitHomeInsuranceQuote(
   formData: HomeInsuranceFormData,
-  policyFilePath?: string | null
+  policyFile?: File | null
 ) {
   try {
+    // Handle file upload first if file exists
+    let policyFilePath = null;
+    if (policyFile) {
+      const fileExt = policyFile.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `home-insurance/${fileName}`;
+
+      // Create storage bucket if it doesn't exist
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(bucket => bucket.name === 'policy-files');
+      
+      if (!bucketExists) {
+        await supabase.storage.createBucket('policy-files', {
+          public: false,
+          fileSizeLimit: 10485760 // 10MB
+        });
+      }
+
+      // Upload file to storage
+      const { error: uploadError } = await supabase.storage
+        .from('policy-files')
+        .upload(filePath, policyFile);
+
+      if (uploadError) {
+        console.error("Error uploading file:", uploadError);
+        toast.error("Erro ao fazer upload do arquivo. Por favor, tente novamente.");
+        // Continue without the file
+      } else {
+        policyFilePath = filePath;
+      }
+    }
+
     const { error, data: insertedData } = await supabase
       .from("home_insurance_quotes")
       .insert({
         ...formData,
-        policy_file_path: policyFilePath || null,
+        policy_file_path: policyFilePath,
         security_equipment: formData.security_equipment || [],
         additional_data: formData.additional_data || {}
       })

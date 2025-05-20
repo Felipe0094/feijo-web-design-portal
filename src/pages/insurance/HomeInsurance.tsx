@@ -28,11 +28,14 @@ const HomeInsurance = () => {
       console.log("Submitting quote data:", data);
       console.log("Policy file:", policyFile);
       
-      const result = await submitHomeInsuranceQuote(data, policyFile ? policyFile.name : null);
+      const result = await submitHomeInsuranceQuote(data, policyFile);
       
       if (result.success) {
         setQuoteData(data);
         setShowDialog(true);
+      } else {
+        console.error("Error result:", result.error);
+        toast.error(`Erro ao enviar cotação: ${result.error}`);
       }
     } catch (error) {
       console.error("Error submitting quote:", error);

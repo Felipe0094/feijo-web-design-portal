@@ -11,14 +11,14 @@ serve(async (req) => {
   }
 
   try {
-    // Verificar autenticação
+    // Verificar autenticação - The JWT token is validated automatically by Supabase
     const authorization = req.headers.get('Authorization');
     if (!authorization) {
       throw new Error('Missing authorization header');
     }
 
     // Use the API key from environment variables
-    const resendApiKey = "re_2hAktQX4_MZFwiUSRBdNzge3oSxXAqnkh"; // Hardcoded for now as it's the same key used in other functions
+    const resendApiKey = "re_2hAktQX4_MZFwiUSRBdNzge3oSxXAqnkh"; // Hardcoded for now
     const resend = new Resend(resendApiKey);
     
     const supabaseClient = createClient(
@@ -37,7 +37,7 @@ serve(async (req) => {
     let securityEquipmentText = "";
     if (quoteData.security_equipment && quoteData.security_equipment.length > 0) {
       securityEquipmentText = "Equipamentos de Segurança:\n" + 
-        quoteData.security_equipment.map(item => `- ${item}`).join("\n");
+        quoteData.security_equipment.map((item: string) => `- ${item}`).join("\n");
     }
 
     // Format additional data
@@ -46,7 +46,7 @@ serve(async (req) => {
       additionalDataText = "Dados Adicionais:\n";
       for (const [key, value] of Object.entries(quoteData.additional_data)) {
         if (value === true) {
-          const labelMap = {
+          const labelMap: Record<string, string> = {
             is_owner: "Segurado é o proprietário do imóvel",
             is_rural: "Imóvel localizado na zona rural",
             is_gated_community: "Imóvel localizado em condomínio fechado",
@@ -62,7 +62,7 @@ serve(async (req) => {
     }
 
     // Format coverage values
-    const formatCurrency = (value) => {
+    const formatCurrency = (value: any) => {
       if (value === null || value === undefined) return "Não informado";
       return new Intl.NumberFormat('pt-BR', { 
         style: 'currency', 
