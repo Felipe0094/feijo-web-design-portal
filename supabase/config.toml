@@ -1,0 +1,46 @@
+
+project_id = "ocapqzfqqgjcqohlomva"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+immutable_port = 54324
+
+[inbucket]
+enabled = true
+port = 54325
+
+[auth]
+enabled = true
+port = 54326
+
+[storage]
+enabled = true
+port = 54327
+
+[realtime]
+enabled = true
+port = 54328
+
+[analytics]
+enabled = true
+port = 54329
+
+[functions]
+[functions.send-travel-insurance-quote]
+verify_jwt = true
+
+[functions.send-home-insurance-quote]
+verify_jwt = true
+
+[functions.send-life-insurance-quote]
+verify_jwt = true
+
