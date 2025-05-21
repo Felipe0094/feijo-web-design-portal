@@ -328,7 +328,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? value.toString() : value}
+                          value={value || ''}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
