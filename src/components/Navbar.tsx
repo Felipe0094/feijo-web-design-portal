@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -83,6 +82,9 @@ const Navbar = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+          <a href="/#seguradoras-parceiras" className="hover:text-feijo-red transition-colors font-medium text-sm">
+            Seguradoras
+          </a>
           <a href="/#contact" className="hover:text-feijo-red transition-colors font-medium text-sm">
             Contato
           </a>          
@@ -118,6 +120,9 @@ const Navbar = () => {
                 </Link>                
               ))}
             </div>
+            <a href="/#seguradoras-parceiras" className="text-feijo-darkgray hover:text-feijo-red transition-colors font-medium py-2 text-sm">
+              Seguradoras
+            </a>
             <a href="/#contact" className="text-feijo-darkgray hover:text-feijo-red transition-colors font-medium py-2 text-sm">
               Contato
             </a>            
