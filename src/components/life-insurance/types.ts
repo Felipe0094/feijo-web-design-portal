@@ -1,5 +1,6 @@
+
 export interface LifeInsuranceFormData {
-  insurance_type: 'new' | 'renewal';
+  insurance_type: "new" | "renewal";
   full_name: string;
   document_number: string;
   birth_date: string;
@@ -11,13 +12,12 @@ export interface LifeInsuranceFormData {
   smoker: boolean;
   practices_sports: boolean;
   sports_description?: string;
-  retirement_status: 'none' | 'time_age' | 'disability';
+  retirement_status: "none" | "time_age" | "disability";
   standard_death_coverage: number | null;
   accidental_death_coverage: number | null;
   permanent_disability_coverage: number | null;
   insurance_coverage: string;
   insurance_value: number;
-  insurance_installments: number;
-  insurance_beneficiaries: string;
-  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
+  seller: string;
+  // Removed insurance_installments and insurance_beneficiaries
 }

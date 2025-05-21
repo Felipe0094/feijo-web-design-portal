@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -11,26 +12,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { User, FileText, DollarSign, Heart, Dumbbell, Clipboard, Loader2 } from 'lucide-react';
+import { User, FileText, DollarSign, Heart, Clipboard, Loader2 } from 'lucide-react';
 import { LifeInsuranceFormData } from './types';
 import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
-
-// Format number as currency
-const formatCurrency = (value: number | string) => {
-  const numberValue = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(numberValue)) return '';
-  
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(numberValue);
-};
-
-// Parse currency string to number
-const parseCurrency = (value: string) => {
-  if (!value) return null;
-  return parseFloat(value.replace(/[^\d.-]/g, ''));
-};
+import { CurrencyInput } from "@/components/ui/currency-input";
 
 const formSchema = z.object({
   insurance_type: z.enum(["new", "renewal"]),
@@ -50,9 +35,7 @@ const formSchema = z.object({
   accidental_death_coverage: z.string().optional(),
   permanent_disability_coverage: z.string().optional(),
   insurance_coverage: z.string().min(1, "Cobertura é obrigatória"),
-  insurance_value: z.string().min(1, "Valor do seguro é obrigatório"),
-  insurance_installments: z.string().min(1, "Parcelas é obrigatório"),
-  insurance_beneficiaries: z.string().min(1, "Beneficiários é obrigatório"),
+  insurance_value: z.number().min(0, "Valor do seguro é obrigatório"),
   seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
@@ -86,9 +69,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
       permanent_disability_coverage: "",
       seller: "Felipe",
       insurance_coverage: "",
-      insurance_value: "",
-      insurance_installments: "",
-      insurance_beneficiaries: "",
+      insurance_value: 0,
     },
   });
   
@@ -114,19 +95,18 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
         email: values.email,
         weight: parseFloat(values.weight),
         height: parseFloat(values.height),
-        monthly_income: parseCurrency(values.monthly_income),
+        monthly_income: parseFloat(values.monthly_income.replace(/[^\d.-]/g, '')),
         smoker: values.smoker,
         practices_sports: values.practices_sports,
         sports_description: values.sports_description,
         retirement_status: values.retirement_status,
-        standard_death_coverage: parseCurrency(values.standard_death_coverage || ''),
-        accidental_death_coverage: parseCurrency(values.accidental_death_coverage || ''),
-        permanent_disability_coverage: parseCurrency(values.permanent_disability_coverage || ''),
+        standard_death_coverage: parseFloat(values.standard_death_coverage?.replace(/[^\d.-]/g, '') || '0'),
+        accidental_death_coverage: parseFloat(values.accidental_death_coverage?.replace(/[^\d.-]/g, '') || '0'),
+        permanent_disability_coverage: parseFloat(values.permanent_disability_coverage?.replace(/[^\d.-]/g, '') || '0'),
         seller: values.seller,
         insurance_coverage: values.insurance_coverage,
-        insurance_value: parseCurrency(values.insurance_value),
-        insurance_installments: parseInt(values.insurance_installments),
-        insurance_beneficiaries: values.insurance_beneficiaries,
+        insurance_value: values.insurance_value,
+        // Removed insurance_installments and insurance_beneficiaries as requested
       };
       
       if (onSuccess) {
@@ -349,11 +329,14 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? formatCurrency(value) : value}
+                          value={typeof value === 'number' ? value.toString() : value}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
-                            onChange(numberValue ? formatCurrency(numberValue) : '');
+                            onChange(numberValue ? numberValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }) : '');
                           }}
                         />
                       </FormControl>
@@ -488,11 +471,14 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? formatCurrency(value) : value}
+                          value={typeof value === 'number' ? value.toString() : value}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
-                            onChange(numberValue ? formatCurrency(numberValue) : '');
+                            onChange(numberValue ? numberValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }) : '');
                           }}
                         />
                       </FormControl>
@@ -510,11 +496,14 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? formatCurrency(value) : value}
+                          value={typeof value === 'number' ? value.toString() : value}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
-                            onChange(numberValue ? formatCurrency(numberValue) : '');
+                            onChange(numberValue ? numberValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }) : '');
                           }}
                         />
                       </FormControl>
@@ -532,11 +521,14 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? formatCurrency(value) : value}
+                          value={typeof value === 'number' ? value.toString() : value}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
-                            onChange(numberValue ? formatCurrency(numberValue) : '');
+                            onChange(numberValue ? numberValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }) : '');
                           }}
                         />
                       </FormControl>
@@ -626,73 +618,11 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                     <FormItem>
                       <FormLabel>Valor*</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Insurance Installments */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
-                <Clipboard className="text-[#fa0008]" size={20} />
-                Parcelas do Seguro
-              </h3>
-              <div className="grid gap-4 md:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="insurance_installments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Parcelas*</FormLabel>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="1">1x</SelectItem>
-                            <SelectItem value="2">2x</SelectItem>
-                            <SelectItem value="3">3x</SelectItem>
-                            <SelectItem value="4">4x</SelectItem>
-                            <SelectItem value="5">5x</SelectItem>
-                            <SelectItem value="6">6x</SelectItem>
-                            <SelectItem value="7">7x</SelectItem>
-                            <SelectItem value="8">8x</SelectItem>
-                            <SelectItem value="9">9x</SelectItem>
-                            <SelectItem value="10">10x</SelectItem>
-                            <SelectItem value="11">11x</SelectItem>
-                            <SelectItem value="12">12x</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Insurance Beneficiaries */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
-                <Clipboard className="text-[#fa0008]" size={20} />
-                Beneficiários do Seguro
-              </h3>
-              <div className="grid gap-4 md:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="insurance_beneficiaries"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Beneficiários*</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
+                        <CurrencyInput 
+                          value={field.value} 
+                          onChange={field.onChange}
+                          placeholder="R$ 0,00" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
