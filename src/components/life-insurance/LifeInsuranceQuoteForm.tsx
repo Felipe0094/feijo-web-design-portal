@@ -100,13 +100,12 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
         practices_sports: values.practices_sports,
         sports_description: values.sports_description,
         retirement_status: values.retirement_status,
-        standard_death_coverage: parseFloat(values.standard_death_coverage?.replace(/[^\d.-]/g, '') || '0'),
-        accidental_death_coverage: parseFloat(values.accidental_death_coverage?.replace(/[^\d.-]/g, '') || '0'),
-        permanent_disability_coverage: parseFloat(values.permanent_disability_coverage?.replace(/[^\d.-]/g, '') || '0'),
+        standard_death_coverage: values.standard_death_coverage ? parseFloat(values.standard_death_coverage.replace(/[^\d.-]/g, '') || '0') : null,
+        accidental_death_coverage: values.accidental_death_coverage ? parseFloat(values.accidental_death_coverage.replace(/[^\d.-]/g, '') || '0') : null,
+        permanent_disability_coverage: values.permanent_disability_coverage ? parseFloat(values.permanent_disability_coverage.replace(/[^\d.-]/g, '') || '0') : null,
         seller: values.seller,
         insurance_coverage: values.insurance_coverage,
         insurance_value: values.insurance_value,
-        // Removed insurance_installments and insurance_beneficiaries as requested
       };
       
       if (onSuccess) {
@@ -471,7 +470,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? value.toString() : value}
+                          value={value || ''}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
@@ -496,7 +495,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? value.toString() : value}
+                          value={value || ''}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';
@@ -521,7 +520,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                       <FormControl>
                         <Input 
                           {...rest} 
-                          value={typeof value === 'number' ? value.toString() : value}
+                          value={value || ''}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/[^\d]/g, '');
                             const numberValue = rawValue ? parseInt(rawValue) / 100 : '';

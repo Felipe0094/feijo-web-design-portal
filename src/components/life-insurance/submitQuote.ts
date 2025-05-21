@@ -1,3 +1,4 @@
+
 import { LifeInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,8 +29,6 @@ export const submitQuote = async (
       permanent_disability_coverage: formData.permanent_disability_coverage,
       insurance_coverage: formData.insurance_coverage,
       insurance_value: formData.insurance_value,
-      insurance_installments: formData.insurance_installments,
-      insurance_beneficiaries: formData.insurance_beneficiaries,
       seller: formData.seller
     };
     
