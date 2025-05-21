@@ -27,8 +27,6 @@ export const submitQuote = async (
       standard_death_coverage: formData.standard_death_coverage,
       accidental_death_coverage: formData.accidental_death_coverage,
       permanent_disability_coverage: formData.permanent_disability_coverage,
-      insurance_coverage: formData.insurance_coverage,
-      insurance_value: formData.insurance_value,
       seller: formData.seller
     };
     

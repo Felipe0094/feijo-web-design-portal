@@ -12,10 +12,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { User, FileText, DollarSign, Heart, Clipboard, Loader2 } from 'lucide-react';
+import { User, FileText, Heart, Clipboard, Loader2 } from 'lucide-react';
 import { LifeInsuranceFormData } from './types';
 import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
-import { CurrencyInput } from "@/components/ui/currency-input";
 
 const formSchema = z.object({
   insurance_type: z.enum(["new", "renewal"]),
@@ -34,8 +33,6 @@ const formSchema = z.object({
   standard_death_coverage: z.string().optional(),
   accidental_death_coverage: z.string().optional(),
   permanent_disability_coverage: z.string().optional(),
-  insurance_coverage: z.string().min(1, "Cobertura é obrigatória"),
-  insurance_value: z.number().min(0, "Valor do seguro é obrigatório"),
   seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
@@ -68,8 +65,6 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
       accidental_death_coverage: "",
       permanent_disability_coverage: "",
       seller: "Felipe",
-      insurance_coverage: "",
-      insurance_value: 0,
     },
   });
   
@@ -104,8 +99,6 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
         accidental_death_coverage: values.accidental_death_coverage ? parseFloat(values.accidental_death_coverage.replace(/[^\d.-]/g, '') || '0') : null,
         permanent_disability_coverage: values.permanent_disability_coverage ? parseFloat(values.permanent_disability_coverage.replace(/[^\d.-]/g, '') || '0') : null,
         seller: values.seller,
-        insurance_coverage: values.insurance_coverage,
-        insurance_value: values.insurance_value,
       };
       
       if (onSuccess) {
@@ -567,67 +560,6 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                   </FormItem>
                 )}
               />
-            </div>
-
-            {/* Insurance Coverage */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
-                <Clipboard className="text-[#fa0008]" size={20} />
-                Cobertura do Seguro
-              </h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="insurance_coverage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cobertura*</FormLabel>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="basica">Básica</SelectItem>
-                            <SelectItem value="intermediaria">Intermediária</SelectItem>
-                            <SelectItem value="completa">Completa</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Insurance Value */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-feijo-darkgray flex items-center gap-2">
-                <DollarSign className="text-[#fa0008]" size={20} />
-                Valor do Seguro
-              </h3>
-              <div className="grid gap-4 md:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="insurance_value"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Valor*</FormLabel>
-                      <FormControl>
-                        <CurrencyInput 
-                          value={field.value} 
-                          onChange={field.onChange}
-                          placeholder="R$ 0,00" 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
 
             <div className="text-center pt-6">
