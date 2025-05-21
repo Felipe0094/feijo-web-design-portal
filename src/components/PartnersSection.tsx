@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import InsuranceCompanyDetails from './InsuranceCompanyDetails';
 
@@ -130,7 +129,7 @@ const PartnersSection = () => {
   };
   
   return (
-    <section className="py-16 bg-[#DADADB]">
+    <section id="seguradoras-parceiras" className="pt-24 pb-16 bg-[#DADADB]">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center text-[#FA0108]">
           Seguradoras Pareceiras<br></br><span className="text-base md:text-xl">Consulte aqui os Canais de Atendimento</span>
