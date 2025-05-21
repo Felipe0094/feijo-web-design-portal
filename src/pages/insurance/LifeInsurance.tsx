@@ -25,8 +25,11 @@ const LifeInsurance = () => {
       
       if (result.success) {
         setQuoteData(data);
-        // Make sure dialog is shown after successful submission
-        setTimeout(() => setShowDialog(true), 100);
+        // Show dialog after successful submission with a small delay to ensure state updates
+        setTimeout(() => {
+          setShowDialog(true);
+          console.log("Dialog should be shown now");
+        }, 300);
         toast.success("Cotação enviada com sucesso!");
       } else {
         toast.error(result.error || "Erro ao enviar cotação. Tente novamente.");
@@ -39,7 +42,7 @@ const LifeInsurance = () => {
     }
   };
 
-  const handleSendWhatsapp = async () => {
+  const handleSendWhatsapp = () => {
     if (!quoteData) return;
 
     let phoneNumber = "";
@@ -110,7 +113,7 @@ const LifeInsurance = () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text-center flex items-center justify-left gap-2">
+            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text-center flex items-center justify-center gap-2">
               <FileText className="text-feijo-red" size={24} />
               Formulário para Cotação
             </h2>
