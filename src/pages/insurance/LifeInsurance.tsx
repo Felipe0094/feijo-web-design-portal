@@ -15,27 +15,21 @@ const LifeInsurance = () => {
   const [quoteData, setQuoteData] = useState<LifeInsuranceFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormSubmit = async (data: LifeInsuranceFormData) => {
+  const handleFormSubmit = async (data: LifeInsuranceFormData, policyFile?: File) => {
     try {
       setIsSubmitting(true);
       
-      // Clean the data before submission
-      const cleanData = Object.fromEntries(
-        Object.entries(data).filter(([_, v]) => {
-          if (v === undefined) return false;
-          if (v !== null && typeof v === 'object' && '_type' in v) return false;
-          return true;
-        })
-      );
+      console.log("Submitting life insurance quote data:", data);
       
-      console.log("Submitting life insurance quote data:", cleanData);
-      
-      const result = await submitQuote(cleanData as LifeInsuranceFormData);
+      const result = await submitQuote(data, policyFile);
       
       if (result.success) {
-        setQuoteData(cleanData as LifeInsuranceFormData);
-        setShowDialog(true);
+        setQuoteData(data);
+        // Make sure dialog is shown after successful submission
+        setTimeout(() => setShowDialog(true), 100);
         toast.success("Cotação enviada com sucesso!");
+      } else {
+        toast.error(result.error || "Erro ao enviar cotação. Tente novamente.");
       }
     } catch (error) {
       console.error("Error submitting quote:", error);

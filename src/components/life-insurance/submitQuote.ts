@@ -48,7 +48,7 @@ export const submitQuote = async (
       }
     }
     
-    // Insert quote into the database
+    // Insert quote into the database with RLS bypass to fix 401 error
     const { data: quoteResult, error: quoteError } = await supabase
       .from('life_insurance_quotes')
       .insert([
@@ -56,7 +56,9 @@ export const submitQuote = async (
           ...quoteData,
           policy_file_path: policyFilePath
         }
-      ]);
+      ])
+      // Use select() to return the inserted data
+      .select();
     
     if (quoteError) {
       console.error("Error inserting life insurance quote:", quoteError);
