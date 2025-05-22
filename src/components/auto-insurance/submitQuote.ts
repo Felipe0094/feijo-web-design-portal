@@ -12,10 +12,10 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
     const manufacture_year = values.manufacture_year !== undefined ? 
       values.manufacture_year : undefined;
 
-    // Insert quote data into database - using an array with one object to match the expected type
+    // Insert quote data into database - using the correct type signature
     const { data, error } = await supabase
       .from('auto_insurance_quotes')
-      .insert([{  // Wrap the object in an array to match the expected type
+      .insert({
         document_number: values.document_number,
         full_name: values.full_name,
         phone: values.phone,
@@ -55,7 +55,7 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         driver_gender: values.driver_gender,
         driver_relationship: values.driver_relationship,
         seller: values.seller
-      }])
+      })
       .select();
 
     if (error) throw error;
