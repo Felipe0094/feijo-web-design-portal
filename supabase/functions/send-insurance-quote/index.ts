@@ -1,7 +1,4 @@
 
-// Follow this setup guide to integrate the Deno runtime and use Edge Functions:
-// https://deno.com/manual/runtime/manual/getting_started
-
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
@@ -85,9 +82,9 @@ serve(async (req) => {
               margin: 0 auto;
             }
             .header {
-              background-color: #7d8789;
+              background-color: #dee1e1;
               color: #fa0108;
-              padding: 20px;
+              padding: 15px;
               text-align: center;
               border-radius: 5px 5px 0 0;
             }
@@ -116,12 +113,6 @@ serve(async (req) => {
             }
             .info-value {
               flex: 1;
-            }
-            .footer {
-              margin-top: 30px;
-              font-size: 14px;
-              color: #666;
-              font-style: italic;
             }
           </style>
         </head>
@@ -245,9 +236,9 @@ serve(async (req) => {
               margin: 0 auto;
             }
             .header {
-              background-color: #7d8789;
+              background-color: #dee1e1;
               color: #fa0108;
-              padding: 20px;
+              padding: 15px;
               text-align: center;
               border-radius: 5px 5px 0 0;
             }
@@ -276,12 +267,6 @@ serve(async (req) => {
             }
             .info-value {
               flex: 1;
-            }
-            .footer {
-              margin-top: 30px;
-              font-size: 14px;
-              color: #666;
-              font-style: italic;
             }
           </style>
         </head>
@@ -419,7 +404,7 @@ serve(async (req) => {
         </html>
       `;
     } else {
-      // Auto Insurance template with updated styling and all data fields
+      // Auto Insurance and other insurance types template with updated styling
       emailContent = `
         <!DOCTYPE html>
         <html>
@@ -434,9 +419,9 @@ serve(async (req) => {
               margin: 0 auto;
             }
             .header {
-              background-color: #7d8789;
+              background-color: #dee1e1;
               color: #fa0108;
-              padding: 20px;
+              padding: 15px;
               text-align: center;
               border-radius: 5px 5px 0 0;
             }
@@ -465,12 +450,6 @@ serve(async (req) => {
             }
             .info-value {
               flex: 1;
-            }
-            .footer {
-              margin-top: 30px;
-              font-size: 14px;
-              color: #666;
-              font-style: italic;
             }
           </style>
         </head>
@@ -623,13 +602,13 @@ serve(async (req) => {
               </div>` : ''}
               ${quoteData.has_work_garage !== undefined ? `
               <div class="info-row">
-                <div class="info-label">Possui Garagem no Trabalho:</div>
-                <div class="info-value">${quoteData.has_work_garage ? 'Sim' : 'Não'}</div>
+                <div class="info-label">Garagem no Trabalho:</div>
+                <div class="info-value">${quoteData.has_work_garage === true ? 'Sim' : quoteData.has_work_garage === false ? 'Não' : quoteData.has_work_garage || 'Não informado'}</div>
               </div>` : ''}
               ${quoteData.has_school_garage !== undefined ? `
               <div class="info-row">
-                <div class="info-label">Possui Garagem na Escola:</div>
-                <div class="info-value">${quoteData.has_school_garage ? 'Sim' : 'Não'}</div>
+                <div class="info-label">Garagem na Escola:</div>
+                <div class="info-value">${quoteData.has_school_garage === true ? 'Sim' : quoteData.has_school_garage === false ? 'Não' : quoteData.has_school_garage || 'Não informado'}</div>
               </div>` : ''}
               ${quoteData.vehicle_usage ? `
               <div class="info-row">
@@ -704,10 +683,7 @@ serve(async (req) => {
               </div>` : ''}
             </div>
             
-            <div class="footer">
-              <p>Para entrar em contato com o cliente, responda diretamente a este email ou utilize os dados de contato fornecidos.</p>
-              ${policyFile ? `<p>A apólice do cliente está anexada a este email.</p>` : ''}
-            </div>
+            ${policyFile ? `<p>A apólice do cliente está anexada a este email.</p>` : ''}
           </div>
         </body>
         </html>

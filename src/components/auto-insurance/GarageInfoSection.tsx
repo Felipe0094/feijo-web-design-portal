@@ -80,16 +80,32 @@ export function GarageInfoSection() {
             control={form.control}
             name="has_work_garage"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">Garagem no Trabalho?</FormLabel>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
+              <FormItem>
+                <FormLabel>Garagem no Trabalho?</FormLabel>
+                <Select 
+                  onValueChange={(value) => {
+                    if (value === "true") field.onChange(true);
+                    else if (value === "false") field.onChange(false);
+                    else field.onChange(value);
+                  }}
+                  defaultValue={
+                    field.value === true ? "true" : 
+                    field.value === false ? "false" : 
+                    field.value?.toString() || "false"
+                  }
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma opção" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="true">Sim</SelectItem>
+                    <SelectItem value="false">Não</SelectItem>
+                    <SelectItem value="not_applicable">Não utiliza para este fim</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -98,16 +114,32 @@ export function GarageInfoSection() {
             control={form.control}
             name="has_school_garage"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">Garagem na Escola?</FormLabel>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
+              <FormItem>
+                <FormLabel>Garagem na Escola?</FormLabel>
+                <Select 
+                  onValueChange={(value) => {
+                    if (value === "true") field.onChange(true);
+                    else if (value === "false") field.onChange(false);
+                    else field.onChange(value);
+                  }}
+                  defaultValue={
+                    field.value === true ? "true" : 
+                    field.value === false ? "false" : 
+                    field.value?.toString() || "false"
+                  }
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma opção" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="true">Sim</SelectItem>
+                    <SelectItem value="false">Não</SelectItem>
+                    <SelectItem value="not_applicable">Não utiliza para este fim</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
