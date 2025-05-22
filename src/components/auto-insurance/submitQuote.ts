@@ -1,6 +1,7 @@
 
 import { AutoInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: File) => {
   try {
@@ -54,7 +55,8 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         driver_gender: values.driver_gender,
         driver_relationship: values.driver_relationship,
         seller: values.seller
-      });
+      })
+      .select();
 
     if (error) throw error;
 
@@ -78,16 +80,7 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         };
       }
 
-      // Clean values - remove undefined and special type objects
-      const cleanValues = Object.fromEntries(
-        Object.entries(values).filter(([_, v]) => {
-          if (v === undefined) return false;
-          if (v !== null && typeof v === 'object' && '_type' in v) return false;
-          return true;
-        })
-      );
-
-      // Send email notification
+      // Send all form data without any cleaning or filtering
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
       const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-insurance-quote', {
         method: 'POST',
@@ -96,8 +89,9 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
           'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
         },
         body: JSON.stringify({ 
-          quoteData: cleanValues,
-          policyFile: fileDetails
+          quoteData: values,
+          policyFile: fileDetails,
+          quoteType: 'auto'
         })
       });
       
@@ -114,9 +108,11 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
       // Continue with the operation even if email sending fails
     }
 
+    toast.success("Cotação enviada com sucesso! Em breve entraremos em contato.");
     return { success: true, data };
   } catch (error) {
     console.error("Error submitting quote:", error);
+    toast.error("Erro ao enviar cotação. Tente novamente.");
     throw error;
   }
 };
