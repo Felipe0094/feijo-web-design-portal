@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -45,7 +44,16 @@ export const VehicleInfoSection = () => {
               <FormItem>
                 <FormLabel>Placa</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    maxLength={7}
+                    onChange={(e) => {
+                      // Remove caracteres especiais e converte para maiúsculas
+                      const value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                      field.onChange(value);
+                    }}
+                    placeholder="ABC1234"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
