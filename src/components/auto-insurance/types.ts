@@ -1,52 +1,65 @@
+import { Database } from '@/integrations/supabase/types';
+
+export type Gender = Database['public']['Enums']['gender'];
+export type MaritalStatus = Database['public']['Enums']['marital_status'];
+export type ResidenceType = Database['public']['Enums']['residence_type'];
+export type InsuranceType = Database['public']['Enums']['insurance_type'];
+export type VehicleUsage = Database['public']['Enums']['vehicle_usage'];
 
 export interface AutoInsuranceFormData {
-  document_number: string;
   full_name: string;
-  phone: string;
+  document_number: string;
   email: string;
-  insurance_type: "new" | "renewal";
-  
-  // Optional fields
+  phone: string;
+  birth_date?: string;
+  gender?: Gender;
+  marital_status?: MaritalStatus;
   address?: string;
   zip_code?: string;
-  birth_date?: string;
-  marital_status?: "single" | "married" | "divorced" | "widowed" | "other";
-  gender?: "male" | "female" | "other";
-  residence_type?: "house" | "apartment" | "condominium";
   
-  is_new_vehicle?: boolean;
+  // Vehicle information
+  model?: string;
   license_plate?: string;
   chassis_number?: string;
   manufacture_year?: number;
   model_year?: number;
-  model?: string;
   fuel_type?: string;
+  is_new_vehicle?: boolean;
   is_financed?: boolean;
   is_armored?: boolean;
+  armoring_value?: number;
   has_natural_gas?: boolean;
+  gas_kit_value?: number;
   has_sunroof?: boolean;
-  parking_zip_code?: string;
+  insurance_type?: InsuranceType;
   
-  has_home_garage?: boolean;
-  has_automatic_gate?: boolean;
-  has_work_garage?: boolean | string;  // Updated to allow string values
-  has_school_garage?: boolean | string; // Updated to allow string values
-  vehicle_usage?: "personal" | "work" | "passenger_transport";
-  vehicles_at_residence?: number;
-  covers_young_drivers?: boolean;
-  condutor_menor?: string;
-  
+  // Driver information
   is_driver_insured?: boolean;
-  driver_document_number?: string;
   driver_full_name?: string;
+  driver_document_number?: string;
   driver_birth_date?: string;
-  driver_marital_status?: "single" | "married" | "divorced" | "widowed" | "other";
-  driver_gender?: "male" | "female" | "other";
+  driver_gender?: Gender;
+  driver_marital_status?: MaritalStatus;
+  driver_residence_type?: ResidenceType;
   driver_relationship?: string;
   driver_license_number?: string;
   driver_license_category?: string;
   driver_license_expiration?: string;
   driver_profession?: string;
   driver_income?: number;
-  seller: "Felipe" | "Renan" | "Renata" | "Gabriel";
+  covers_young_drivers?: boolean;
+  youngest_driver_age?: number;
+
+  // Garage information
+  residence_type?: ResidenceType;
+  vehicles_at_residence?: number;
+  has_home_garage?: boolean;
+  has_automatic_gate?: boolean;
+  has_work_garage?: boolean | string;  // Allow string values for "not_applicable"
+  has_school_garage?: boolean | string; // Allow string values for "not_applicable"
+  vehicle_usage?: VehicleUsage;
+  parking_zip_code?: string;
+  
+  // Seller information
+  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
 }

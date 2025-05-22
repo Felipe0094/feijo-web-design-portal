@@ -1,5 +1,5 @@
-import React from "react";
-import { Car, Plane, Home, Heart, Building, FileText, Building2, Activity } from 'lucide-react';
+import React, { useState } from "react";
+import { Car, Plane, Home, Heart, Building, FileText, Building2, Activity, MessageSquareMore } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardContent } from "./ui/card";
@@ -34,7 +34,16 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ title, description, icon,
   );
 };
 
+const consultants = [
+  { name: "Carlos Henrique", phone: "5522988156269" },
+  { name: "Felipe", phone: "5521972110705" },
+  { name: "Gabriel", phone: "5522999210343" },
+  { name: "Renan", phone: "5522988521503" },
+  { name: "Renata", phone: "5511994150565" },
+];
+
 const InsuranceSection = () => {
+  const [showModal, setShowModal] = useState(false);
   const insuranceTypes = [
     {
       title: "Seguro de Automóveis",
@@ -102,23 +111,47 @@ const InsuranceSection = () => {
           ))}
         </div>
         <div className="w-full flex justify-center mt-8">
-          <a 
-            href="https://wa.me/5522988521503" 
-            target="_blank"
-            rel="noopener noreferrer"
+          <Button
+            className="w-full sm:w-auto px-6 py-4 bg-white text-[#242424] gap-2 transition duration-300 ease-in-out hover:bg-[#808080] hover:text-[#f80108]"
+            onClick={() => setShowModal(true)}
           >
-            <Button className="w-full sm:w-auto px-6 py-4 bg-white text-[#242424] gap-2 transition duration-300 ease-in-out hover:bg-[#808080] hover:text-[#f80108]">
-              <img
-                src="/whatsapp.png"
-                width="20"
-                height="20"
-                className="mr-2"
-                alt="WhatsApp"
-              />
-              Para outros seguros, entre em contato.
-            </Button>
-          </a>
+            <img
+              src="/whatsapp.png"
+              width="20"
+              height="20"
+              className="mr-2"
+              alt="WhatsApp"
+            />
+            Para outros seguros, entre em contato.
+          </Button>
         </div>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs">
+              <h3 className="text-lg font-semibold mb-4 text-center text-feijo-darkgray">Selecione o seu Consultor / Corretor:</h3>
+              <div className="flex flex-col gap-2">
+                {consultants.map((c) => (
+                  <a
+                    key={c.phone}
+                    href={`https://wa.me/${c.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full px-4 py-2 bg-[#dadadb] text-[#f0251a] rounded hover:bg-gray-400 text-center transition-colors duration-200 flex items-center justify-center gap-2"
+                  >
+                    <MessageSquareMore size={16} />
+                    {c.name}
+                  </a>
+                ))}
+              </div>
+              <button
+                className="mt-4 w-full px-4 py-2 bg-[#f0261b] text-white rounded hover:bg-gray-400 transition-colors duration-200"
+                onClick={() => setShowModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

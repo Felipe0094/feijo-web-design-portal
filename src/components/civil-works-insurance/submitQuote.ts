@@ -55,7 +55,20 @@ export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFo
     }
 
     try {
+<<<<<<< HEAD
       // Send all form data without filtering
+=======
+      // Clean values for email - remove undefined and special type objects
+      const cleanValues = Object.fromEntries(
+        Object.entries(data).filter(([_, v]) => {
+          if (v === undefined) return false;
+          if (v !== null && typeof v === 'object' && '_type' in v) return false;
+          return true;
+        })
+      );
+
+      // Send email notification
+>>>>>>> master
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
       const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-insurance-quote', {
         method: 'POST',
@@ -64,7 +77,11 @@ export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFo
           'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
         },
         body: JSON.stringify({ 
+<<<<<<< HEAD
           quoteData: data,
+=======
+          quoteData: cleanValues,
+>>>>>>> master
           quoteType: 'civil-works'
         })
       });

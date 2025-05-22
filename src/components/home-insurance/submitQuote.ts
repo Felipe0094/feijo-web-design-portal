@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { HomeInsuranceFormData } from "./types";
 import { toast } from "sonner";
@@ -59,35 +58,33 @@ export async function submitHomeInsuranceQuote(
     try {
       // Prepare policy file if it exists
       let fileDetails = undefined;
-      if (policyFile) {
-        const fileContent = await policyFile.arrayBuffer();
-        const base64Content = btoa(
-          new Uint8Array(fileContent).reduce(
-            (data, byte) => data + String.fromCharCode(byte), 
-            ''
-          )
-        );
-        
+      if (policyFilePath) {
         fileDetails = {
-          name: policyFile.name,
-          type: policyFile.type,
-          size: policyFile.size,
-          content: base64Content
+          path: policyFilePath
         };
       }
 
-      // Send email notification using edge function - send all form data without filtering
+      // Clean values - remove undefined and special type objects
+      const cleanValues = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => {
+          if (v === undefined) return false;
+          if (v !== null && typeof v === 'object' && '_type' in v) return false;
+          return true;
+        })
+      );
+
+      // Send email notification using edge function
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
-      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-insurance-quote', {
+      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-home-insurance-quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
         },
         body: JSON.stringify({ 
-          quoteData: formData,
-          policyFile: fileDetails,
-          quoteType: 'home-insurance'
+          quoteData: cleanValues,
+          quoteType: 'home-insurance',
+          policyFile: fileDetails
         })
       });
       
