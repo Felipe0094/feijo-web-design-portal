@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -67,7 +68,7 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
       has_copayment: "no",
       notes: "",
       dependents: [],
-      seller: "Felipe",
+      seller: "Carlos Henrique",
     },
   });
 
@@ -490,10 +491,11 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
                         <SelectItem value="Felipe">Felipe</SelectItem>
+                        <SelectItem value="Gabriel">Gabriel</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>
                         <SelectItem value="Renata">Renata</SelectItem>
-                        <SelectItem value="Gabriel">Gabriel</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -45,7 +45,6 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         vehicle_usage: values.vehicle_usage,
         vehicles_at_residence: values.vehicles_at_residence,
         covers_young_drivers: values.covers_young_drivers,
-        condutor_menor: values.condutor_menor,
         is_driver_insured: values.is_driver_insured,
         driver_document_number: values.driver_document_number,
         driver_full_name: values.driver_full_name,
@@ -56,8 +55,6 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         seller: values.seller
       })
       .select();
-
-    if (error) throw error;
 
     try {
       // Prepare policy file if it exists
