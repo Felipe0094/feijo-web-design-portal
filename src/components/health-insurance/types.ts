@@ -21,5 +21,5 @@ export interface HealthInsuranceFormData {
   has_copayment: 'yes' | 'no';
   notes?: string;
   dependents: Dependent[];
-  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel'; // Updated to include Gabriel
+  seller: 'Carlos Henrique' | 'Felipe' | 'Renan' | 'Renata' | 'Gabriel'; // Updated to include Carlos Henrique
 }
