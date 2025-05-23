@@ -1,4 +1,3 @@
-
 import { AutoInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,7 +11,7 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
     const manufacture_year = values.manufacture_year !== undefined ? 
       values.manufacture_year : undefined;
 
-    // Insert quote data into database - using the correct type signature
+    // Insert quote data into database - fixed the insert operation
     const { data, error } = await supabase
       .from('auto_insurance_quotes')
       .insert({
