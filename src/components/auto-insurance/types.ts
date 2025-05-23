@@ -63,5 +63,5 @@ export interface AutoInsuranceFormData {
   parking_zip_code?: string;
   
   // Seller information
-  seller: 'Carlos Henrique' | 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
+  seller: 'Carlos Henrique' | 'Felipe' | 'Gabriel' | 'Renan' | 'Renata';
 }
