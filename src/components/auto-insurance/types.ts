@@ -50,7 +50,7 @@ export interface AutoInsuranceFormData {
   driver_income?: number;
   covers_young_drivers?: boolean;
   youngest_driver_age?: number;
-  condutor_menor?: string;  // Added this field to match the form data
+  condutor_menor?: string;
 
   // Garage information
   residence_type?: ResidenceType;

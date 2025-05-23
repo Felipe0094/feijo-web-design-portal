@@ -1,3 +1,4 @@
+
 import { AutoInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -14,7 +15,7 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
     // Insert quote data into database - fixed the insert operation
     const { data, error } = await supabase
       .from('auto_insurance_quotes')
-      .insert({
+      .insert([{
         document_number: values.document_number,
         full_name: values.full_name,
         phone: values.phone,
@@ -54,7 +55,7 @@ export const submitQuote = async (values: AutoInsuranceFormData, policyFile?: Fi
         driver_gender: values.driver_gender,
         driver_relationship: values.driver_relationship,
         seller: values.seller
-      })
+      }])
       .select();
     
     if (error) {
