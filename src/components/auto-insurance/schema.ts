@@ -20,7 +20,7 @@ export const formSchema = z.object({
   model_year: z.number().optional(),
   model: z.string(),
   fuel_type: z.string(),
-  seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
+  seller: z.enum(["Carlos Henrique", "Felipe", "Gabriel", "Renan", "Renata"]),
   covers_young_drivers: z.boolean().optional(),
   condutor_menor: z.string().optional(),
 })

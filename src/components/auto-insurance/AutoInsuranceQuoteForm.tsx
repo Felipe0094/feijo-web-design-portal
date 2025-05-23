@@ -117,7 +117,7 @@ const AutoInsuranceQuoteForm = ({
       driver_license_expiration: undefined,
       driver_profession: undefined,
       driver_income: undefined,
-      seller: "Felipe",
+      seller: "Carlos Henrique",
     },
   });
 
@@ -335,6 +335,7 @@ const AutoInsuranceQuoteForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
                         <SelectItem value="Felipe">Felipe</SelectItem>
                         <SelectItem value="Gabriel">Gabriel</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>

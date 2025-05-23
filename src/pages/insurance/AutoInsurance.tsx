@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MessageSquare, Car, FileText } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -58,20 +57,23 @@ const AutoInsurance = () => {
     let phoneNumber = "";
     
     switch (quoteData.seller) {
+      case "Carlos Henrique":
+        phoneNumber = "5522988156269"; // Phone number for Carlos Henrique
+        break;
       case "Felipe":
         phoneNumber = "5521972110705"; // Phone number for Felipe
         break;
+      case "Gabriel":
+        phoneNumber = "5522999210343"; // Phone number for Gabriel
+        break;
       case "Renan":
-        phoneNumber = "5522988521503";
+        phoneNumber = "5522988521503"; // Phone number for Renan
         break;
       case "Renata":
-        phoneNumber = "5511994150565";
-        break;
-      case "Gabriel":
-        phoneNumber = "5522999210343"; // Added Gabriel with the provided phone number
+        phoneNumber = "5511994150565"; // Phone number for Renata
         break;
       default:
-        phoneNumber = "5521972110705"; // Default number
+        phoneNumber = "5522988156269"; // Default to Carlos Henrique's number
     }
     
     let message = encodeURIComponent(
