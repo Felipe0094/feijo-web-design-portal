@@ -87,6 +87,16 @@
   }
 }
 
+/* Removendo o cursor de texto ao clicar mas mantendo a seleção */
+* {
+  caret-color: transparent;
+}
+
+/* Restaurando o cursor de texto em campos de input e textarea */
+input, textarea {
+  caret-color: auto;
+}
+
 .insurance-card {
   @apply flex flex-col items-center p-6 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-300 h-full;
 }
