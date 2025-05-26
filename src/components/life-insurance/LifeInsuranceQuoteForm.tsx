@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { User, FileText, Heart, Clipboard, Loader2 } from 'lucide-react';
 import { LifeInsuranceFormData } from './types';
-import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
+import { formatCpfCnpj, formatPhone, formatCpf } from "@/utils/formatters";
 
 const formSchema = z.object({
   insurance_type: z.enum(["new", "renewal"]),
@@ -201,7 +201,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                   name="document_number"
                   render={({ field }) => {
                     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                      const formatted = formatCpfCnpj(e.target.value);
+                      const formatted = formatCpf(e.target.value);
                       field.onChange(formatted);
                     };
                     

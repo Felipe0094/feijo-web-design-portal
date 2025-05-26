@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,7 +14,7 @@ import { toast } from "sonner";
 import { Users, Plus, Trash2, User, CarFront, Home, FileText, Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { HealthInsuranceFormData, Dependent } from './types';
-import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
+import { formatCpfCnpj, formatPhone, formatCnpj, formatCpf } from "@/utils/formatters";
 
 
 
@@ -178,7 +177,7 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                   name="document_number"
                   render={({ field }) => {
                     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                      const formatted = formatCpfCnpj(e.target.value);
+                      const formatted = formatCnpj(e.target.value);
                       field.onChange(formatted);
                     };
                     
@@ -263,15 +262,22 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                 <FormField
                   control={form.control}
                   name="insured_cpf"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CPF do Segurado*</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const formatted = formatCpf(e.target.value);
+                      field.onChange(formatted);
+                    };
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>CPF do Segurado*</FormLabel>
+                        <FormControl>
+                          <Input {...field} onChange={handleChange} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 
                 <FormField
@@ -404,15 +410,22 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                     <FormField
                       control={form.control}
                       name={`dependents.${index}.cpf` as const}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>CPF</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                          const formatted = formatCpf(e.target.value);
+                          field.onChange(formatted);
+                        };
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>CPF</FormLabel>
+                            <FormControl>
+                              <Input {...field} onChange={handleChange} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
                     
                     <FormField

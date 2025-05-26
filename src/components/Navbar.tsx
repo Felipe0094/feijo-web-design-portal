@@ -50,7 +50,6 @@ const Navbar = () => {
               alt="Feijó Seguros" 
               className="h-10 md:h-12"
               loading="eager"
-              // Removed the invalid 'priority' attribute
             />
           </Link>
         </div>
@@ -63,7 +62,7 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-white hover:text-feijo-red hover:bg-transparent focus:bg-transparent text-sm">
+                <NavigationMenuTrigger className="bg-transparent text-white hover:text-feijo-red hover:bg-transparent focus:bg-transparent focus:text-white data-[state=open]:text-white data-[state=open]:bg-transparent text-sm">
                   Seguros                  
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>

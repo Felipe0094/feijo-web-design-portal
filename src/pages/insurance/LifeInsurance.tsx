@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Heart, FileText, MessageSquare } from 'lucide-react';
@@ -15,24 +14,20 @@ const LifeInsurance = () => {
   const [quoteData, setQuoteData] = useState<LifeInsuranceFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormSubmit = async (data: LifeInsuranceFormData, policyFile?: File) => {
+  const handleFormSubmit = async (data: LifeInsuranceFormData) => {
     try {
       setIsSubmitting(true);
       
-      console.log("Submitting life insurance quote data:", data);
+      console.log("Submitting quote data:", data);
       
-      const result = await submitQuote(data, policyFile);
+      const result = await submitQuote(data);
       
       if (result.success) {
         setQuoteData(data);
-        // Show dialog after successful submission with a small delay to ensure state updates
-        setTimeout(() => {
-          setShowDialog(true);
-          console.log("Dialog should be shown now");
-        }, 300);
-        toast.success("Cotação enviada com sucesso!");
+        setShowDialog(true);
       } else {
-        toast.error(result.error || "Erro ao enviar cotação. Tente novamente.");
+        console.error("Error result:", result.error);
+        toast.error(`Erro ao enviar cotação: ${result.error}`);
       }
     } catch (error) {
       console.error("Error submitting quote:", error);
@@ -42,12 +37,15 @@ const LifeInsurance = () => {
     }
   };
 
-  const handleSendWhatsapp = () => {
+  const handleSendWhatsapp = async () => {
     if (!quoteData) return;
 
     let phoneNumber = "";
     
     switch (quoteData.seller) {
+      case "Carlos Henrique":
+        phoneNumber = "5522988156269";
+        break;
       case "Felipe":
         phoneNumber = "5521972110705";
         break;

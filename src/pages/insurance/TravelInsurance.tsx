@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plane, MessageSquare, Loader2 } from 'lucide-react';
+import { Plane, MessageSquare, Loader2, FileText } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -54,24 +54,27 @@ const TravelInsurance = () => {
     let phoneNumber = "";
     
     switch (quoteData.seller) {
+      case "Carlos Henrique":
+        phoneNumber = "5522988156269"; // Número do Carlos Henrique
+        break;
       case "Felipe":
-        phoneNumber = "5521972110705"; // Phone number for Felipe
+        phoneNumber = "5521972110705"; // Número do Felipe
         break;
       case "Renan":
-        phoneNumber = "5522988521503";
+        phoneNumber = "5522988521503"; // Número do Renan
         break;
       case "Renata":
-        phoneNumber = "5511994150565";
+        phoneNumber = "5511994150565"; // Número da Renata
         break;
       case "Gabriel":
-        phoneNumber = "5522999210343"; // Phone number for Gabriel
+        phoneNumber = "5522999210343"; // Número do Gabriel
         break;
       default:
-        phoneNumber = "5521972110705"; // Default number
+        phoneNumber = "5521972110705"; // Número padrão (Felipe)
     }
     
     let message = encodeURIComponent(
-      `Olá ${quoteData.seller}, acabei de enviar meus dados para cotação de seguro viagem no site da Feijó Corretora.\n\n` +
+      `Olá ${quoteData.seller}, acabei de enviar meus dados para cotação de seguro de viagem no site da Feijó Corretora.\n\n` +
       `Nome: ${quoteData.fullName}\n` +
       `CPF: ${quoteData.cpf}\n` +
       `Email: ${quoteData.email}\n`
