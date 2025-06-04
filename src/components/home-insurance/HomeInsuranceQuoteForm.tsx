@@ -13,8 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Home, User, MapPin, FileText, Shield, Users, Loader2 } from "lucide-react";
+import { Home, User, MapPin, FileText, Shield, Users, Loader2, Info } from "lucide-react";
 import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // Form schema with Zod validation
 const formSchema = z.object({
@@ -26,7 +27,7 @@ const formSchema = z.object({
   email: z.string().email("Email inválido"),
   
   residence_type: z.enum(["house", "apartment"]),
-  construction_type: z.enum(["superior", "solid", "wood", "mixed", "inferior"]),
+  construction_type: z.enum(["superior", "solid", "mixed", "inferior"]),
   occupation_type: z.enum(["habitual", "vacation"]),
   
   zip_code: z.string().min(1, "CEP é obrigatório"),
@@ -57,7 +58,7 @@ const formSchema = z.object({
   theft_value: z.string().optional(),
   other_coverage_notes: z.string().optional(),
   
-  seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]).default("Felipe"),
+  seller: z.enum(["Carlos Henrique", "Felipe", "Renan", "Renata", "Gabriel"])
 });
 
 // Security equipment options
@@ -114,7 +115,6 @@ const HomeInsuranceQuoteForm = ({
         has_professional_activity: false,
         is_next_to_vacant: false,
       },
-      seller: "Felipe",
     },
   });
 
@@ -410,7 +410,62 @@ const HomeInsuranceQuoteForm = ({
                   name="construction_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Construção*</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <FormLabel>Tipo de Construção*</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" className="h-6 w-6 p-0">
+                              <Info className="h-4 w-4 text-[#fa0008]" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <div className="space-y-2 text-xs">
+                              <div>
+                                <h4 className="font-semibold mb-1 text-sm">1. Construção Superior</h4>
+                                <ul className="list-disc pl-4 space-y-0.5">
+                                  <li>Estrutura: Concreto armado ou alvenaria.</li>
+                                  <li>Pisos: Lajes de concreto em todos os pavimentos.</li>
+                                  <li>Cobertura: Material incombustível (ex: telha de barro, fibrocimento), com até 25% de material combustível permitido para iluminação.</li>
+                                  <li>Forro: Laje ou material incombustível.</li>
+                                  <li>Escadas: Material incombustível.</li>
+                                  <li>Fiação elétrica: Embutida ou protegida adequadamente.</li>
+                                </ul>
+                                <p className="mt-1">Construções com essas características são consideradas de menor risco e, portanto, podem ter prêmios de seguro mais baixos.</p>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold mb-1 text-sm">2. Construção Sólida</h4>
+                                <ul className="list-disc pl-4 space-y-0.5">
+                                  <li>Paredes externas: Alvenaria (tijolos, cimento, pedra).</li>
+                                  <li>Pisos: Madeira ou laje.</li>
+                                  <li>Cobertura: Material incombustível, podendo ser sustentada por estrutura de madeira.</li>
+                                  <li>Forro e escadas: Podem ser de qualquer material.</li>
+                                  <li>Fiação elétrica: Embutida ou aparente.</li>
+                                </ul>
+                                <p className="mt-1">Embora seguras, essas construções podem ter um risco ligeiramente maior devido ao uso de madeira em alguns elementos.</p>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold mb-1 text-sm">3. Construção Mista</h4>
+                                <ul className="list-disc pl-4 space-y-0.5">
+                                  <li>Paredes externas: Até 25% de material combustível (ex: madeira).</li>
+                                  <li>Estrutura: Pode incluir metal, madeira ou materiais pré-fabricados.</li>
+                                  <li>Cobertura: Material incombustível, permitindo até 25% de material combustível.</li>
+                                  <li>Forro, pisos e escadas: Podem ser de qualquer material.</li>
+                                </ul>
+                                <p className="mt-1">Essa categoria é comum em construções que combinam alvenaria e madeira, especialmente em áreas rurais.</p>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold mb-1 text-sm">4. Construção Inferior</h4>
+                                <ul className="list-disc pl-4 space-y-0.5">
+                                  <li>Paredes externas: Mais de 25% de material combustível (ex: madeira).</li>
+                                  <li>Cobertura: Material combustível ou mais de 25% de material combustível.</li>
+                                  <li>Estrutura, forro, pisos e escadas: Podem ser de qualquer material.</li>
+                                </ul>
+                                <p className="mt-1">Construções predominantemente de madeira ou materiais combustíveis se enquadram nessa categoria, sendo consideradas de maior risco pelas seguradoras.</p>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -420,7 +475,6 @@ const HomeInsuranceQuoteForm = ({
                         <SelectContent>
                           <SelectItem value="superior">Superior</SelectItem>
                           <SelectItem value="solid">Sólida</SelectItem>
-                          <SelectItem value="wood">Madeira</SelectItem>
                           <SelectItem value="mixed">Mista</SelectItem>
                           <SelectItem value="inferior">Inferior</SelectItem>
                         </SelectContent>
@@ -790,6 +844,7 @@ const HomeInsuranceQuoteForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
                         <SelectItem value="Felipe">Felipe</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>
                         <SelectItem value="Renata">Renata</SelectItem>

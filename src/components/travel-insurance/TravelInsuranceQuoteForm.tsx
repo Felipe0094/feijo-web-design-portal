@@ -145,144 +145,354 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
   };
 
   return (
-    <Card className="w-full bg-white border-0 shadow-md">
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-feijo-darkgray flex items-center gap-2">
-            <FileText className="text-feijo-red" size={24} />
-            Formulário para Cotação
-          </h2>
-        </div>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Personal Information */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <Info className="text-feijo-red" size={20} />
-                <h3 className="text-lg font-medium text-feijo-darkgray">Informações Pessoais</h3>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <FileText className="text-[#fa0008]" size={24} />
+        <h2 className="text-xl font-semibold text-feijo-darkgray">
+          Formulário para Cotação
+        </h2>
+      </div>
+
+      <Card className="w-full">
+        <CardContent className="p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <Info className="text-[#fa0008]" size={20} />
+                  <h3 className="text-lg font-medium text-feijo-darkgray">Informações Pessoais</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome Completo</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Digite seu nome completo" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="cpf"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CPF*</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="000.000.000-00" 
+                            {...field}
+                            onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Telefone*</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="(XX) XXXXX-XXXX" 
+                            {...field}
+                            onChange={(e) => field.onChange(formatPhone(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="Digite seu email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Trip Details */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <Plane className="text-[#fa0008]" size={20} />
+                  <h3 className="text-lg font-medium text-feijo-darkgray">Detalhes da Viagem</h3>
+                </div>
+                
                 <FormField
                   control={form.control}
-                  name="fullName"
+                  name="tripType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome Completo</FormLabel>
+                      <FormLabel>Tipo de Viagem</FormLabel>
                       <FormControl>
-                        <Input placeholder="Digite seu nome completo" {...field} />
+                        <RadioGroup 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                          className="flex space-x-4"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="national" id="national" />
+                            <label htmlFor="national" className="text-sm">Nacional</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="international" id="international" />
+                            <label htmlFor="international" className="text-sm">Internacional</label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
-                <FormField
-                  control={form.control}
-                  name="cpf"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CPF*</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="000.000.000-00" 
-                          {...field}
-                          onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone*</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="(XX) XXXXX-XXXX" 
-                          {...field}
-                          onChange={(e) => field.onChange(formatPhone(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="destination"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Destino</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o destino" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {destinations.map((destination) => (
+                              <SelectItem key={destination} value={destination}>
+                                {destination}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="purpose"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Finalidade</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione a finalidade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="business">Negócios</SelectItem>
+                            <SelectItem value="leisure">Lazer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="departureDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Data de Saída</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP", { locale: ptBR })
+                                ) : (
+                                  <span>Selecione a data</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date?.toISOString())}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="returnDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Data de Retorno</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP", { locale: ptBR })
+                                ) : (
+                                  <span>Selecione a data</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date?.toISOString())}
+                              disabled={(date) => {
+                                const departure = form.getValues("departureDate");
+                                return date < new Date(departure || new Date());
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="motorcycleUse"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                       <FormControl>
-                        <Input type="email" placeholder="Digite seu email" {...field} />
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={field.onChange}
+                          className="h-4 w-4 rounded border-gray-300 text-feijo-red focus:ring-feijo-red"
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Vou utilizar motocicleta durante a viagem
+                        </FormLabel>
+                      </div>
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
-            
-            {/* Trip Details */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <Plane className="text-feijo-red" size={20} />
-                <h3 className="text-lg font-medium text-feijo-darkgray">Detalhes da Viagem</h3>
+              
+              {/* Passengers */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <Users className="text-[#fa0008]" size={20} />
+                  <h3 className="text-lg font-medium text-feijo-darkgray">Passageiros</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="passengers0to64"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>0 a 64 anos</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="passengers65to70"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>65 a 70 anos</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="passengers71to85"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>71 a 85 anos</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
               
-              <FormField
-                control={form.control}
-                name="tripType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Viagem</FormLabel>
-                    <FormControl>
-                      <RadioGroup 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                        className="flex space-x-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="national" id="national" />
-                          <label htmlFor="national" className="text-sm">Nacional</label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="international" id="international" />
-                          <label htmlFor="international" className="text-sm">Internacional</label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Consultant */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <Users className="text-[#fa0008]" size={20} />
+                  <h3 className="text-lg font-medium text-feijo-darkgray">Consultor</h3>
+                </div>
+                
                 <FormField
                   control={form.control}
-                  name="destination"
+                  name="seller"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Destino</FormLabel>
+                      <FormLabel>Selecione seu consultor</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o destino" />
+                            <SelectValue placeholder="Selecione um consultor" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {destinations.map((destination) => (
-                            <SelectItem key={destination} value={destination}>
-                              {destination}
+                          {consultants.map((consultant) => (
+                            <SelectItem key={consultant} value={consultant}>
+                              {consultant}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -291,237 +501,29 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
                     </FormItem>
                   )}
                 />
-                
-                <FormField
-                  control={form.control}
-                  name="purpose"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Finalidade</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a finalidade" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="business">Negócios</SelectItem>
-                          <SelectItem value="leisure">Lazer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="departureDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data de Saída</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "PPP", { locale: ptBR })
-                              ) : (
-                                <span>Selecione a data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString())}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
+              <div className="text-center pt-6">
+                <Button 
+                  type="submit" 
+                  className="bg-[#FA0108] hover:bg-red-600 text-white px-8 py-6 text-lg rounded-md"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    "Solicitar cotação"
                   )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="returnDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data de Retorno</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "PPP", { locale: ptBR })
-                              ) : (
-                                <span>Selecione a data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString())}
-                            disabled={(date) => {
-                              const departure = form.getValues("departureDate");
-                              return date < new Date(departure || new Date());
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                </Button>
               </div>
-              
-              <FormField
-                control={form.control}
-                name="motorcycleUse"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        className="h-4 w-4 rounded border-gray-300 text-feijo-red focus:ring-feijo-red"
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Vou utilizar motocicleta durante a viagem
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            {/* Passengers */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <Users className="text-feijo-red" size={20} />
-                <h3 className="text-lg font-medium text-feijo-darkgray">Passageiros</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="passengers0to64"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>0 a 64 anos</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="passengers65to70"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>65 a 70 anos</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="passengers71to85"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>71 a 85 anos</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            
-            {/* Consultant */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <Users className="text-feijo-red" size={20} />
-                <h3 className="text-lg font-medium text-feijo-darkgray">Consultor</h3>
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="seller"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Selecione seu consultor</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um consultor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {consultants.map((consultant) => (
-                          <SelectItem key={consultant} value={consultant}>
-                            {consultant}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <div className="text-center pt-6">
-              <Button 
-                type="submit" 
-                className="bg-[#FA0108] hover:bg-red-600 text-white px-8 py-6 text-lg rounded-md"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  "Solicitar cotação"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

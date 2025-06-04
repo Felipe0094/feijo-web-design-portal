@@ -1,4 +1,3 @@
-
 export interface HomeInsuranceFormData {
   insurance_type: "new" | "renewal";
   full_name: string;
@@ -8,7 +7,7 @@ export interface HomeInsuranceFormData {
   email: string;
   
   residence_type: "house" | "apartment";
-  construction_type: "superior" | "solid" | "wood" | "mixed" | "inferior";
+  construction_type: "superior" | "solid" | "mixed" | "inferior";
   occupation_type: "habitual" | "vacation";
   
   zip_code: string;
@@ -39,5 +38,5 @@ export interface HomeInsuranceFormData {
   theft_value?: number;
   other_coverage_notes?: string;
   
-  seller: string;
+  seller: "Carlos Henrique" | "Felipe" | "Renan" | "Renata" | "Gabriel";
 }

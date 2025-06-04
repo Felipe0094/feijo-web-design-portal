@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.36.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
@@ -72,44 +71,194 @@ serve(async (req) => {
 
     // Create email content
     const emailContent = `
-      <h2>Nova Cotação de Seguro Residencial</h2>
-      
-      <h3>Dados do Cliente:</h3>
-      <p><strong>Nome:</strong> ${quoteData.full_name}</p>
-      <p><strong>CPF/CNPJ:</strong> ${quoteData.document_number}</p>
-      <p><strong>Telefone:</strong> ${quoteData.phone}</p>
-      <p><strong>Email:</strong> ${quoteData.email}</p>
-      
-      <h3>Dados do Imóvel:</h3>
-      <p><strong>Tipo de Residência:</strong> ${quoteData.residence_type === "house" ? "Casa" : "Apartamento"}</p>
-      <p><strong>Tipo de Construção:</strong> ${quoteData.construction_type}</p>
-      <p><strong>Tipo de Ocupação:</strong> ${quoteData.occupation_type === "habitual" ? "Habitual" : "Veraneio"}</p>
-      
-      <h3>Endereço:</h3>
-      <p>${quoteData.street}, ${quoteData.number}${quoteData.complement ? `, ${quoteData.complement}` : ''}</p>
-      <p>${quoteData.neighborhood}, ${quoteData.city} - ${quoteData.state}</p>
-      <p>CEP: ${quoteData.zip_code}</p>
-      
-      ${securityEquipmentText ? `<h3>Equipamentos de Segurança:</h3><p>${securityEquipmentText.replace(/\n/g, '<br>')}</p>` : ''}
-      
-      ${additionalDataText ? `<h3>Dados Adicionais:</h3><p>${additionalDataText.replace(/\n/g, '<br>')}</p>` : ''}
-      
-      <h3>Valores de Cobertura:</h3>
-      <p><strong>Valor do imóvel:</strong> ${formatCurrency(quoteData.insured_value)}</p>
-      <p><strong>Danos elétricos:</strong> ${formatCurrency(quoteData.electrical_damage_value)}</p>
-      <p><strong>Quebra de vidros:</strong> ${formatCurrency(quoteData.glass_value)}</p>
-      <p><strong>Alagamento:</strong> ${formatCurrency(quoteData.flooding_value)}</p>
-      <p><strong>Vazamento de tubulações:</strong> ${formatCurrency(quoteData.pipe_leakage_value)}</p>
-      <p><strong>Roubo/furto:</strong> ${formatCurrency(quoteData.theft_value)}</p>
-      
-      <p><strong>Vendedor/Consultor:</strong> ${quoteData.seller}</p>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Nova Cotação de Seguro Residencial</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .logo {
+            max-width: 100px;
+            margin-bottom: 20px;
+          }
+          .section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+          }
+          .section-title {
+            color: #544f4f;
+            border-bottom: 2px solid #c92424;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+          }
+          .info-row {
+            display: flex;
+            margin-bottom: 10px;
+          }
+          .info-label {
+            font-weight: bold;
+            width: 200px;
+            color: #666;
+            flex-shrink: 0;
+          }
+          .info-value {
+            flex: 1;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+          }
+          .seller-info {
+            color: #c92424;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0 30px 0;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="https://i.ibb.co/TSvpZzF/Captura-de-tela-2025-06-04-103812.png" alt="Feijó Corretora" class="logo">
+          <h1 style="color: #544f4f; margin: 0;">Nova Cotação de Seguro Residencial</h1>
+          <div class="seller-info">
+            Vendedor: ${quoteData.seller}
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Dados do Cliente</h2>
+          <div class="info-row">
+            <div class="info-label">Nome:</div>
+            <div class="info-value">${quoteData.full_name}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">CPF/CNPJ:</div>
+            <div class="info-value">${quoteData.document_number}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Telefone:</div>
+            <div class="info-value">${quoteData.phone}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Email:</div>
+            <div class="info-value">${quoteData.email}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Dados do Imóvel</h2>
+          <div class="info-row">
+            <div class="info-label">Tipo de Residência:</div>
+            <div class="info-value">${quoteData.residence_type === "house" ? "Casa" : "Apartamento"}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tipo de Construção:</div>
+            <div class="info-value">${quoteData.construction_type}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tipo de Ocupação:</div>
+            <div class="info-value">${quoteData.occupation_type === "habitual" ? "Habitual" : "Veraneio"}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Endereço</h2>
+          <div class="info-row">
+            <div class="info-label">Logradouro:</div>
+            <div class="info-value">${quoteData.street}, ${quoteData.number}${quoteData.complement ? `, ${quoteData.complement}` : ''}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Bairro:</div>
+            <div class="info-value">${quoteData.neighborhood}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Cidade/Estado:</div>
+            <div class="info-value">${quoteData.city} - ${quoteData.state}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">CEP:</div>
+            <div class="info-value">${quoteData.zip_code}</div>
+          </div>
+        </div>
+
+        ${securityEquipmentText ? `
+        <div class="section">
+          <h2 class="section-title">Equipamentos de Segurança</h2>
+          <div class="info-row">
+            <div class="info-value">${securityEquipmentText.replace(/\n/g, '<br>')}</div>
+          </div>
+        </div>
+        ` : ''}
+
+        ${additionalDataText ? `
+        <div class="section">
+          <h2 class="section-title">Dados Adicionais</h2>
+          <div class="info-row">
+            <div class="info-value">${additionalDataText.replace(/\n/g, '<br>')}</div>
+          </div>
+        </div>
+        ` : ''}
+
+        <div class="section">
+          <h2 class="section-title">Valores de Cobertura</h2>
+          <div class="info-row">
+            <div class="info-label">Valor do imóvel:</div>
+            <div class="info-value">${formatCurrency(quoteData.insured_value)}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Danos elétricos:</div>
+            <div class="info-value">${formatCurrency(quoteData.electrical_damage_value)}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Quebra de vidros:</div>
+            <div class="info-value">${formatCurrency(quoteData.glass_value)}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Alagamento:</div>
+            <div class="info-value">${formatCurrency(quoteData.flooding_value)}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Vazamento de tubulações:</div>
+            <div class="info-value">${formatCurrency(quoteData.pipe_leakage_value)}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Roubo/furto:</div>
+            <div class="info-value">${formatCurrency(quoteData.theft_value)}</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Esta é uma mensagem automática. Por favor, não responda a este email.</p>
+          <p>© 2024 Feijó Corretora. Todos os direitos reservados.</p>
+        </div>
+      </body>
+      </html>
     `;
 
     // Send email using Resend
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: "Cotações <onboarding@resend.dev>", // Using Resend's default verified sender
+      from: "Cotações <onboarding@resend.dev>",
       to: ["cotacoes.feijocorretora@gmail.com"],
-      subject: `Nova Cotação de Seguro Residencial - ${quoteData.full_name}`,
+      subject: `Nova Cotação de Seguro Residencial - ${quoteData.full_name} - Vendedor: ${quoteData.seller || "Não informado"}`,
       html: emailContent
     });
 
