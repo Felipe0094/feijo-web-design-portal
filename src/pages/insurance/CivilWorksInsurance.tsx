@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MessageSquare, Building, FileText } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -44,17 +43,29 @@ const CivilWorksInsurance = () => {
   const handleSendWhatsapp = () => {
     if (!quoteData?.seller) return;
 
-    const consultantPhones = {
-      "Carlos Henrique": "5522988156269",
-      "Felipe": "5521972110705",
-      "Gabriel": "5522999210343",
-      "Renan": "5522988521503",
-      "Renata": "5511994150565"
-    };
+    let phoneNumber = "";
+    
+    switch (quoteData.seller) {
+      case "Carlos Henrique":
+        phoneNumber = "5522988156269";
+        break;
+      case "Felipe":
+        phoneNumber = "5521972110705";
+        break;
+      case "Gabriel":
+        phoneNumber = "5522999210343";
+        break;
+      case "Renan":
+        phoneNumber = "5522988521503";
+        break;
+      case "Renata":
+        phoneNumber = "5511994150565";
+        break;
+    }
 
-    const phoneNumber = consultantPhones[quoteData.seller as keyof typeof consultantPhones];
     if (!phoneNumber) {
-      console.error('Número do WhatsApp não encontrado para o consultor:', quoteData.seller);
+      toast.error("Consultor não encontrado. Por favor, entre em contato com a Feijó Corretora.");
+      setShowDialog(false);
       return;
     }
 
@@ -71,13 +82,13 @@ const CivilWorksInsurance = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 mb-8">
-            <Building className="text-[#fa0008]" size={24} />
-            <h1 className="text-2xl font-bold text-feijo-darkgray">Seguro de Obras Civis</h1>
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-8" id="top">
+          <div className="flex items-center gap-4 mb-8">
+            <Building className="text-[#FA0108]" size={48} />
+            <h1 className="text-3xl font-bold text-feijo-darkgray">Seguro de Obras Civis</h1>
           </div>
           
           <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -100,7 +111,7 @@ const CivilWorksInsurance = () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text-center flex items-center justify-left gap-2">
+            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text- flex items-center justify-left gap-2">
               <FileText className="text-feijo-red" size={24} />
               Formulário para Cotação
             </h2>

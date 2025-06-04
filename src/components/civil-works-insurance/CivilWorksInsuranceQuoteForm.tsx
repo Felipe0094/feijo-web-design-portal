@@ -127,7 +127,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
         pollution: 0,
         resulting_moral_damages: 0,
       },
-      seller: 'Felipe',
+      seller: '',
     },
   });
 
@@ -849,7 +849,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
             <div className="text-center pt-6">
               <Button
                 type="submit"
-                className="w-full"
+                className="bg-feijo-red hover:bg-red-600 text-white px-8 py-6 text-lg rounded-md"
                 disabled={isSubmitting || externalIsSubmitting}
               >
                 {isSubmitting || externalIsSubmitting ? (
