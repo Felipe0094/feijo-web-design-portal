@@ -38,8 +38,8 @@ export const submitTravelQuote = async (data: TravelInsuranceFormData) => {
       // Clean values - remove undefined and special type objects
       const cleanValues = Object.fromEntries(
         Object.entries(quoteData).filter(([_, v]) => {
-          if (v === undefined) return false;
-          if (v !== null && typeof v === 'object' && v !== null && '_type' in v) return false;
+          if (v === undefined || v === null) return false;
+          if (v !== null && typeof v === 'object' && '_type' in v) return false;
           return true;
         })
       );
