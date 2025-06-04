@@ -1,20 +1,62 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Building2,FileText} from 'lucide-react';
+import { Building2, FileText, MessageSquare } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BusinessInsuranceQuoteForm from '@/components/business-insurance/BusinessInsuranceQuoteForm';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const BusinessInsurance = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [policyFile, setPolicyFile] = useState<File | null>(null);
-  const navigate = useNavigate();
+  const [showDialog, setShowDialog] = useState(false);
+  const [quoteData, setQuoteData] = useState<any>(null);
 
   const handleFileChange = (file: File | null) => {
     setPolicyFile(file);
+  };
+
+  const handleSendWhatsapp = () => {
+    if (!quoteData?.seller) return;
+
+    let phoneNumber = "";
+    
+    switch (quoteData.seller) {
+      case "Carlos Henrique":
+        phoneNumber = "5522988156269";
+        break;
+      case "Felipe":
+        phoneNumber = "5521972110705";
+        break;
+      case "Gabriel":
+        phoneNumber = "5522999210343";
+        break;
+      case "Renan":
+        phoneNumber = "5522988521503";
+        break;
+      case "Renata":
+        phoneNumber = "5511994150565";
+        break;
+    }
+
+    if (!phoneNumber) {
+      toast.error("Consultor não encontrado. Por favor, entre em contato com a Feijó Corretora.");
+      setShowDialog(false);
+      return;
+    }
+
+    const message = encodeURIComponent(
+      `Olá ${quoteData.seller}, acabei de enviar meus dados para cotação de seguro empresarial no site da Feijó Corretora.\n\n` +
+      `Nome: ${quoteData.full_name}\n` +
+      `CNPJ: ${quoteData.cnpj}\n` +
+      `Email: ${quoteData.email}\n`
+    );
+
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    setShowDialog(false);
+    toast.success("Obrigado pelo contato!");
   };
 
   const handleFormSubmit = async (formData: any) => {
@@ -42,6 +84,7 @@ const BusinessInsurance = () => {
       // Prepare data for database
       const quoteData = {
         ...formData,
+        document_number: formData.cnpj,
         policy_file_path: policyFilePath,
         status: 'pending',
         created_at: new Date().toISOString(),
@@ -56,8 +99,11 @@ const BusinessInsurance = () => {
         throw insertError;
       }
 
-      toast.success('Cotação enviada com sucesso!');
-      navigate('/seguros/empresarial/success');
+      setQuoteData(formData);
+      setShowDialog(true);
+      toast.success("Cotação enviada com sucesso!", {
+        description: "Nossa equipe entrará em contato em breve."
+      });
 
     } catch (error) {
       console.error('Error submitting quote:', error);
@@ -116,6 +162,30 @@ const BusinessInsurance = () => {
           </div>
         </div>
       </main>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Enviar mensagem para o consultor</DialogTitle>
+            <DialogDescription>
+              Deseja enviar uma mensagem para {quoteData?.seller} e informar que já enviou os dados para a cotação?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Não enviar
+            </Button>
+            <Button 
+              className="bg-[#FA0108] hover:bg-red-700"
+              onClick={handleSendWhatsapp}
+            >
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Enviar via WhatsApp
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
       <Footer />
     </div>
   );

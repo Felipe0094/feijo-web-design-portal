@@ -14,6 +14,7 @@ import BusinessInsurance from '@/pages/insurance/BusinessInsurance';
 import BondInsurance from '@/pages/insurance/BondInsurance';
 import HealthInsurance from '@/pages/insurance/HealthInsurance';
 import CivilWorksInsurance from '@/pages/insurance/CivilWorksInsurance';
+import CivilWorksInsuranceSuccess from '@/pages/insurance/civil-works/Success';
 import Consortium from './pages/insurance/Consortium';
 import NotFound from '@/pages/NotFound';
 
@@ -91,6 +92,7 @@ function App() {
             <Route path="/seguros/saude" element={<HealthInsurance />} />
             <Route path="/seguros/saude/cotacao" element={<HealthInsuranceQuote />} />
             <Route path="/seguros/obras-civis" element={<CivilWorksInsurance />} />
+            <Route path="/seguros/obras-civis/success" element={<CivilWorksInsuranceSuccess />} />
             <Route path="/seguros/garantia" element={<BondInsurance />} />
             <Route path="/consorcio" element={<Consortium />} />
             <Route path="*" element={<NotFound />} />

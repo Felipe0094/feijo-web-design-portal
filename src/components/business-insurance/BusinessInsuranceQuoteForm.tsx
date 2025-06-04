@@ -40,7 +40,10 @@ const formSchema = z.object({
   state: z.string().min(1, "Estado é obrigatório"),
   
   floor: z.enum(["ground", "first", "second_plus"]),
-  construction_year: z.string().min(1, "Ano da construção é obrigatório"),
+  construction_year: z.string()
+    .min(4, "O ano deve ter 4 dígitos")
+    .max(4, "O ano deve ter 4 dígitos")
+    .regex(/^\d{4}$/, "Digite um ano válido com 4 dígitos"),
   construction_type: z.enum(["superior", "solid", "mixed", "inferior"]),
   location_type: z.enum(["airport", "market", "commercial_condo", "mall", "supermarket"]),
   
@@ -71,7 +74,7 @@ const formSchema = z.object({
     other_coverage_notes: z.string().optional(),
   }),
   
-  seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]).default("Felipe"),
+  seller: z.enum(["Carlos Henrique", "Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
 // Security equipment options
@@ -178,7 +181,6 @@ const BusinessInsuranceQuoteForm = ({
         employer_liability: "",
         other_coverage_notes: "",
       },
-      seller: "Felipe",
     },
   });
 
@@ -619,7 +621,18 @@ const BusinessInsuranceQuoteForm = ({
                     <FormItem>
                       <FormLabel>Ano da Construção*</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Ano" {...field} />
+                        <Input 
+                          type="text"
+                          placeholder="AAAA"
+                          maxLength={4}
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 4) {
+                              field.onChange(value);
+                            }
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -988,12 +1001,46 @@ const BusinessInsuranceQuoteForm = ({
               </div>
             </div>
             
+            <Separator className="my-4" />
+            
+            {/* Consultor Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 border-b pb-2">
+                <Users className="text-[#fa0008]" size={20} />
+                <h3 className="text-lg font-semibold text-feijo-darkgray">Consultor</h3>
+              </div>
+              <FormField
+                control={form.control}
+                name="seller"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selecione o Consultor*</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o consultor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
+                        <SelectItem value="Felipe">Felipe</SelectItem>
+                        <SelectItem value="Renan">Renan</SelectItem>
+                        <SelectItem value="Renata">Renata</SelectItem>
+                        <SelectItem value="Gabriel">Gabriel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             {/* Submit Button */}
             <div className="flex justify-end">
               <Button 
                 type="submit" 
                 disabled={isSubmitting || localIsSubmitting}
-                className="bg-[#fa0008] hover:bg-[#d40006]"
+                className="bg-[#fa0008] hover:bg-[#d40006] px-8 py-6 text-lg"
               >
                 {(isSubmitting || localIsSubmitting) ? (
                   <>
