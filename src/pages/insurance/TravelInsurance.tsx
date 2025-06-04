@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plane, MessageSquare, Loader2 } from 'lucide-react';
@@ -36,7 +37,7 @@ const TravelInsurance = () => {
           description: "Nossa equipe entrará em contato em breve."
         });
       } else {
-        throw new Error((result.error as Error).message);
+        throw new Error(result.error);
       }
     } catch (error: any) {
       console.error("Error submitting form:", error);

@@ -63,7 +63,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
       standard_death_coverage: "",
       accidental_death_coverage: "",
       permanent_disability_coverage: "",
-      seller: "",
+      seller: "Felipe",
     },
   });
   
