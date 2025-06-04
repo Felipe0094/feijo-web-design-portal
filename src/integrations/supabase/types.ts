@@ -15,6 +15,8 @@ export type Database = {
           armoring_value: number | null
           birth_date: string | null
           chassis_number: string | null
+          city: string | null
+          complement: string | null
           condutor_menor: string | null
           covers_young_drivers: boolean | null
           created_at: string | null
@@ -23,9 +25,14 @@ export type Database = {
           driver_document_number: string | null
           driver_full_name: string | null
           driver_gender: Database["public"]["Enums"]["gender"] | null
+          driver_income: number | null
+          driver_license_category: string | null
+          driver_license_expiration: string | null
+          driver_license_number: string | null
           driver_marital_status:
             | Database["public"]["Enums"]["marital_status"]
             | null
+          driver_profession: string | null
           driver_relationship: string | null
           driver_residence_type:
             | Database["public"]["Enums"]["residence_type"]
@@ -52,13 +59,18 @@ export type Database = {
           marital_status: Database["public"]["Enums"]["marital_status"] | null
           model: string | null
           model_year: number | null
+          neighborhood: string | null
+          number: string | null
           parking_zip_code: string | null
           phone: string
           policy_file_path: string | null
           residence_type: Database["public"]["Enums"]["residence_type"] | null
           seller: string
+          state: string | null
+          street: string | null
           vehicle_usage: Database["public"]["Enums"]["vehicle_usage"] | null
           vehicles_at_residence: number | null
+          youngest_driver_age: number | null
           zip_code: string | null
         }
         Insert: {
@@ -66,6 +78,8 @@ export type Database = {
           armoring_value?: number | null
           birth_date?: string | null
           chassis_number?: string | null
+          city?: string | null
+          complement?: string | null
           condutor_menor?: string | null
           covers_young_drivers?: boolean | null
           created_at?: string | null
@@ -74,9 +88,14 @@ export type Database = {
           driver_document_number?: string | null
           driver_full_name?: string | null
           driver_gender?: Database["public"]["Enums"]["gender"] | null
+          driver_income?: number | null
+          driver_license_category?: string | null
+          driver_license_expiration?: string | null
+          driver_license_number?: string | null
           driver_marital_status?:
             | Database["public"]["Enums"]["marital_status"]
             | null
+          driver_profession?: string | null
           driver_relationship?: string | null
           driver_residence_type?:
             | Database["public"]["Enums"]["residence_type"]
@@ -89,7 +108,9 @@ export type Database = {
           has_automatic_gate?: boolean | null
           has_home_garage?: boolean | null
           has_natural_gas?: boolean | null
-          has_school_garage?: Database["public"]["Enums"]["garage_status"] | null
+          has_school_garage?:
+            | Database["public"]["Enums"]["garage_status"]
+            | null
           has_sunroof?: boolean | null
           has_work_garage?: Database["public"]["Enums"]["garage_status"] | null
           id?: string
@@ -103,13 +124,18 @@ export type Database = {
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           model?: string | null
           model_year?: number | null
+          neighborhood?: string | null
+          number?: string | null
           parking_zip_code?: string | null
           phone: string
           policy_file_path?: string | null
           residence_type?: Database["public"]["Enums"]["residence_type"] | null
           seller?: string
+          state?: string | null
+          street?: string | null
           vehicle_usage?: Database["public"]["Enums"]["vehicle_usage"] | null
           vehicles_at_residence?: number | null
+          youngest_driver_age?: number | null
           zip_code?: string | null
         }
         Update: {
@@ -117,6 +143,8 @@ export type Database = {
           armoring_value?: number | null
           birth_date?: string | null
           chassis_number?: string | null
+          city?: string | null
+          complement?: string | null
           condutor_menor?: string | null
           covers_young_drivers?: boolean | null
           created_at?: string | null
@@ -125,9 +153,14 @@ export type Database = {
           driver_document_number?: string | null
           driver_full_name?: string | null
           driver_gender?: Database["public"]["Enums"]["gender"] | null
+          driver_income?: number | null
+          driver_license_category?: string | null
+          driver_license_expiration?: string | null
+          driver_license_number?: string | null
           driver_marital_status?:
             | Database["public"]["Enums"]["marital_status"]
             | null
+          driver_profession?: string | null
           driver_relationship?: string | null
           driver_residence_type?:
             | Database["public"]["Enums"]["residence_type"]
@@ -140,7 +173,9 @@ export type Database = {
           has_automatic_gate?: boolean | null
           has_home_garage?: boolean | null
           has_natural_gas?: boolean | null
-          has_school_garage?: Database["public"]["Enums"]["garage_status"] | null
+          has_school_garage?:
+            | Database["public"]["Enums"]["garage_status"]
+            | null
           has_sunroof?: boolean | null
           has_work_garage?: Database["public"]["Enums"]["garage_status"] | null
           id?: string
@@ -154,14 +189,58 @@ export type Database = {
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           model?: string | null
           model_year?: number | null
+          neighborhood?: string | null
+          number?: string | null
           parking_zip_code?: string | null
           phone?: string
           policy_file_path?: string | null
           residence_type?: Database["public"]["Enums"]["residence_type"] | null
           seller?: string
+          state?: string | null
+          street?: string | null
           vehicle_usage?: Database["public"]["Enums"]["vehicle_usage"] | null
           vehicles_at_residence?: number | null
+          youngest_driver_age?: number | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      bond_insurance_quotes: {
+        Row: {
+          cnpj: string
+          created_at: string
+          edital_file_path: string | null
+          email: string
+          full_name: string
+          id: string
+          other_documents_file_path: string | null
+          phone: string
+          seller: string
+          status: string
+        }
+        Insert: {
+          cnpj: string
+          created_at?: string
+          edital_file_path?: string | null
+          email: string
+          full_name: string
+          id?: string
+          other_documents_file_path?: string | null
+          phone: string
+          seller?: string
+          status?: string
+        }
+        Update: {
+          cnpj?: string
+          created_at?: string
+          edital_file_path?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          other_documents_file_path?: string | null
+          phone?: string
+          seller?: string
+          status?: string
         }
         Relationships: []
       }
@@ -694,12 +773,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      garage_status: "true" | "false" | "not_applicable"
       gender: "male" | "female" | "other"
       insurance_type: "new" | "renewal"
       marital_status: "single" | "married" | "divorced" | "widowed" | "other"
       residence_type: "house" | "apartment" | "condominium"
       vehicle_usage: "personal" | "work" | "passenger_transport"
-      garage_status: "true" | "false" | "not_applicable"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -815,12 +894,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      garage_status: ["true", "false", "not_applicable"],
       gender: ["male", "female", "other"],
       insurance_type: ["new", "renewal"],
       marital_status: ["single", "married", "divorced", "widowed", "other"],
       residence_type: ["house", "apartment", "condominium"],
       vehicle_usage: ["personal", "work", "passenger_transport"],
-      garage_status: ["true", "false", "not_applicable"],
     },
   },
 } as const

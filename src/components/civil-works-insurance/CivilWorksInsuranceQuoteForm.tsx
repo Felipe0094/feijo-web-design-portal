@@ -127,7 +127,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
         pollution: 0,
         resulting_moral_damages: 0,
       },
-      
+      seller: 'Felipe',
     },
   });
 
@@ -148,34 +148,15 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
   };
 
   const handleFormSubmit = async (values: CivilWorksInsuranceFormSchemaType) => {
-    if (isSubmitting) return;
+    if (isSubmitting || externalIsSubmitting) return;
     
     console.log("Form submit event triggered");
     console.log("Form values before submission:", values);
     console.log("Form errors:", form.formState.errors);
 
-    try {
-      setIsSubmitting(true);
-      const result = await submitCivilWorksInsuranceQuote(values);
-      
-      if (result.success) {
-        onSuccess?.(result.data);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Erro ao enviar cotação. Por favor, tente novamente."
-        });
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao enviar cotação. Por favor, tente novamente."
-      });
-    } finally {
-      setIsSubmitting(false);
+    // Call the parent component's onSuccess handler
+    if (onSuccess) {
+      onSuccess(values);
     }
   };
 

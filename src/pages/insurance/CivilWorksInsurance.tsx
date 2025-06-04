@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MessageSquare, Building, FileText } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -6,24 +7,35 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import CivilWorksInsuranceQuoteForm from '@/components/civil-works-insurance/CivilWorksInsuranceQuoteForm';
-import { CivilWorksInsuranceFormSchemaType } from '@/components/civil-works-insurance/schema';
+import { submitCivilWorksInsuranceQuote } from '@/components/civil-works-insurance/submitQuote';
+import { CivilWorksInsuranceFormData } from '@/components/civil-works-insurance/types';
 
 const CivilWorksInsurance = () => {
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [quoteData, setQuoteData] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormSubmit = async (data: CivilWorksInsuranceFormSchemaType) => {
-    if (isSubmitting) return;
-    
-    console.log("Parent component: Form submitted with data:", data);
-    setIsSubmitting(true);
-
+  const handleFormSubmit = async (data: CivilWorksInsuranceFormData) => {
     try {
-      setShowSuccessDialog(true);
-      toast.success("Cotação enviada com sucesso!");
+      setIsSubmitting(true);
+      
+      console.log("Submitting quote data:", data);
+      
+      const result = await submitCivilWorksInsuranceQuote(data);
+      
+      if (result.success) {
+        setQuoteData(data);
+        setShowDialog(true);
+        toast.success("Cotação enviada com sucesso!", {
+          description: "Nossa equipe entrará em contato em breve."
+        });
+      } else {
+        console.error("Error result:", result.error);
+        toast.error(`Erro ao enviar cotação: ${result.error}`);
+      }
     } catch (error) {
-      console.error("Error in parent component:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao enviar cotação. Por favor, tente novamente.");
+      console.error("Error submitting quote:", error);
+      toast.error("Erro ao enviar cotação. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -32,18 +44,30 @@ const CivilWorksInsurance = () => {
   const handleSendWhatsapp = () => {
     if (!quoteData?.seller) return;
 
-    const phoneNumbers = {
-      "Carlos Henrique": "5511999999999",
-      "Felipe": "5511999999999",
-      "Gabriel": "5511999999999",
-      "Renan": "5511999999999",
-      "Renata": "5511999999999"
+    const consultantPhones = {
+      "Carlos Henrique": "5522988156269",
+      "Felipe": "5521972110705",
+      "Gabriel": "5522999210343",
+      "Renan": "5522988521503",
+      "Renata": "5511994150565"
     };
 
-    const phone = phoneNumbers[quoteData.seller as keyof typeof phoneNumbers] || "5511999999999";
-    const message = `Olá! Gostaria de falar sobre a cotação de seguro de obra civil que acabei de solicitar.`;
+    const phoneNumber = consultantPhones[quoteData.seller as keyof typeof consultantPhones];
+    if (!phoneNumber) {
+      console.error('Número do WhatsApp não encontrado para o consultor:', quoteData.seller);
+      return;
+    }
 
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    const message = encodeURIComponent(
+      `Olá ${quoteData.seller}, acabei de enviar meus dados para cotação de seguro de obras civis no site da Feijó Corretora.\n\n` +
+      `Nome: ${quoteData.full_name}\n` +
+      `CPF/CNPJ: ${quoteData.document_number}\n` +
+      `Email: ${quoteData.email}\n`
+    );
+
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    setShowDialog(false);
+    toast.success("Obrigado pelo contato!");
   };
 
   return (
@@ -88,32 +112,24 @@ const CivilWorksInsurance = () => {
         </div>
       </main>
       
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Cotacao Enviada com Sucesso!</DialogTitle>
+            <DialogTitle>Enviar mensagem para o consultor</DialogTitle>
             <DialogDescription>
-              Sua cotacao foi enviada com sucesso. Em breve entraremos em contato.
+              Deseja enviar uma mensagem para {quoteData?.seller} e informar que já enviou os dados para a cotação?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-start">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setShowSuccessDialog(false)}
-            >
-              Fechar
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Não enviar
             </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                window.open(
-                  "https://wa.me/5511999999999?text=Olá, gostaria de mais informações sobre a cotação de seguro de obras civis.",
-                  "_blank"
-                );
-              }}
+            <Button 
+              className="bg-[#FA0108] hover:bg-red-700"
+              onClick={handleSendWhatsapp}
             >
-              Enviar WhatsApp
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Enviar via WhatsApp
             </Button>
           </DialogFooter>
         </DialogContent>
