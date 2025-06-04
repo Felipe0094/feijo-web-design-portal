@@ -51,23 +51,18 @@ const TravelInsurance = () => {
   const handleSendWhatsapp = async () => {
     if (!quoteData) return;
     
-    let phoneNumber = "";
+    const consultantPhones = {
+      "Carlos Henrique": "5522988156269",
+      "Felipe": "5521972110705",
+      "Gabriel": "5522999210343",
+      "Renan": "5522988521503",
+      "Renata": "5511994150565"
+    };
     
-    switch (quoteData.seller) {
-      case "Felipe":
-        phoneNumber = "5521972110705"; // Phone number for Felipe
-        break;
-      case "Renan":
-        phoneNumber = "5522988521503";
-        break;
-      case "Renata":
-        phoneNumber = "5511994150565";
-        break;
-      case "Gabriel":
-        phoneNumber = "5522999210343"; // Phone number for Gabriel
-        break;
-      default:
-        phoneNumber = "5521972110705"; // Default number
+    const phoneNumber = consultantPhones[quoteData.seller];
+    if (!phoneNumber) {
+      console.error('Número do WhatsApp não encontrado para o consultor:', quoteData.seller);
+      return;
     }
     
     let message = encodeURIComponent(

@@ -139,3 +139,7 @@
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+/* Remove o cursor de texto piscante, mas mantém a seleção */
+*:not(input):not(textarea):not([contenteditable="true"]) {
+  caret-color: transparent;
+}

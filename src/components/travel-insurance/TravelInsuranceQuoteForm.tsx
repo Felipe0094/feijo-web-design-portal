@@ -60,11 +60,21 @@ const destinations = [
 
 // Updated list of consultants as requested
 const consultants = [
+  "Carlos Henrique",
   "Felipe",
   "Gabriel", 
   "Renan", 
   "Renata"
 ];
+
+// Números dos consultores para WhatsApp
+const consultantPhones = {
+  "Carlos Henrique": "5522988156269",
+  "Felipe": "5521972110705",
+  "Gabriel": "5522999210343",
+  "Renan": "5522988521503",
+  "Renata": "5511994150565"
+};
 
 interface TravelInsuranceQuoteFormProps {
   onSuccess?: (data: TravelInsuranceFormData) => void;
@@ -117,14 +127,20 @@ const TravelInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting }: Tra
     if (onSuccess) {
       onSuccess(formData);
     } else {
-      toast.promise(
-        submitTravelQuote(formData),
-        {
-          loading: 'Enviando cotação...',
-          success: 'Cotação enviada com sucesso!',
-          error: 'Erro ao enviar cotação. Tente novamente.'
-        }
-      );
+      try {
+        await toast.promise(
+          submitTravelQuote(formData),
+          {
+            loading: 'Enviando cotação...',
+            success: 'Cotação enviada com sucesso!',
+            error: 'Erro ao enviar cotação. Tente novamente.'
+          }
+        );
+        // Limpar o formulário após o envio bem-sucedido
+        form.reset();
+      } catch (error) {
+        console.error('Erro ao enviar cotação:', error);
+      }
     }
   };
 

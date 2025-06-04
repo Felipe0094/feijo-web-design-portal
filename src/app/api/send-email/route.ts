@@ -12,7 +12,7 @@ const emailStyles = `
     margin: 0 auto;
   }
   .header {
-    background-color: #000000;
+    background-color:rgb(163, 43, 43);
     color: white;
     padding: 20px;
     text-align: center;
