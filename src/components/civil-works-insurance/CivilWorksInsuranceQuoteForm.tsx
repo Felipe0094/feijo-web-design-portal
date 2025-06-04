@@ -127,7 +127,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
         pollution: 0,
         resulting_moral_damages: 0,
       },
-      seller: 'Felipe',
+      
     },
   });
 
@@ -147,17 +147,33 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
     }
   };
 
-  const onSubmit = async (data: CivilWorksInsuranceFormSchemaType) => {
-    setIsSubmitting(true);
+  const handleFormSubmit = async (values: CivilWorksInsuranceFormSchemaType) => {
+    if (isSubmitting) return;
+    
+    console.log("Form submit event triggered");
+    console.log("Form values before submission:", values);
+    console.log("Form errors:", form.formState.errors);
+
     try {
-      const result = await submitCivilWorksInsuranceQuote(data);
+      setIsSubmitting(true);
+      const result = await submitCivilWorksInsuranceQuote(values);
+      
       if (result.success) {
-        // Reset form on successful submission
-        form.reset();
-        if (onSuccess) {
-          onSuccess(data);
-        }
+        onSuccess?.(result.data);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Erro ao enviar cotação. Por favor, tente novamente."
+        });
       }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Erro ao enviar cotação. Por favor, tente novamente."
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -167,7 +183,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
     <Card className="w-full">
       <CardContent className="p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
             {/* Personal Information Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 border-b pb-2">
@@ -451,6 +467,24 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
                   <h3 className="text-lg font-semibold text-feijo-darkgray">Detalhes da Construção</h3>
                 </div>
                 
+                <FormField
+                  control={form.control}
+                  name="services_description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descrição dos Serviços*</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Descreva detalhadamente os serviços que serão realizados na obra"
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -543,8 +577,257 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
               <div className="space-y-4">
                 <TooltipProvider>
                   <div className="space-y-4">
-                    {/* Coverage options fields */}
-                    {/* ... existing coverage fields ... */}
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.basic"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Cobertura Básica*</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.basic}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.property_owner_material_damages"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Danos Materiais ao Proprietário</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.property_owner_material_damages}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.cross_liability"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Responsabilidade Cruzada</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.cross_liability}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.employer_liability"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Responsabilidade Patronal</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.employer_liability}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.moral_damages"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Danos Morais</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.moral_damages}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.project_error"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Erro de Projeto</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.project_error}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.water_leakage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Vazamento de Água</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.water_leakage}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.pollution"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Poluição</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.pollution}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverage_options.resulting_moral_damages"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-2">
+                            <FormLabel>Danos Morais Decorrentes</FormLabel>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-4 w-4 text-feijo-gray" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{coverageTooltips.resulting_moral_damages}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <FormControl>
+                            <CurrencyInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="R$ 0,00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </TooltipProvider>
               </div>
@@ -561,7 +844,7 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
                 name="seller"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Consultor*</FormLabel>
+                    <FormLabel>Consultor/Corretor*</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -569,10 +852,11 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
                         <SelectItem value="Felipe">Felipe</SelectItem>
+                        <SelectItem value="Gabriel">Gabriel</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>
                         <SelectItem value="Renata">Renata</SelectItem>
-                        <SelectItem value="Gabriel">Gabriel</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -582,18 +866,18 @@ const CivilWorksInsuranceQuoteForm: React.FC<CivilWorksInsuranceQuoteFormProps> 
             </div>
 
             <div className="text-center pt-6">
-              <Button 
-                type="submit" 
-                className="bg-[#FA0108] hover:bg-red-600 text-white px-8 py-6 text-lg rounded-md"
-                disabled={isSubmitting}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting || externalIsSubmitting}
               >
-                {isSubmitting ? (
+                {isSubmitting || externalIsSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Enviando...
                   </>
                 ) : (
-                  "Solicitar cotação"
+                  "Enviar Cotação"
                 )}
               </Button>
             </div>

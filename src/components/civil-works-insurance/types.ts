@@ -1,4 +1,3 @@
-
 export interface CivilWorksInsuranceFormData {
   full_name: string;
   document_number: string;
@@ -62,5 +61,5 @@ export interface CivilWorksInsuranceFormData {
   };
   
   // Additional metadata
-  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel';
+  seller: 'Felipe' | 'Renan' | 'Renata' | 'Gabriel' | 'Carlos Henrique';
 }
