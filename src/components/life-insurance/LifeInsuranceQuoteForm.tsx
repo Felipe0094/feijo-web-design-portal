@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,7 +32,7 @@ const formSchema = z.object({
   standard_death_coverage: z.string().optional(),
   accidental_death_coverage: z.string().optional(),
   permanent_disability_coverage: z.string().optional(),
-  seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
+  seller: z.enum(["Carlos Henrique", "Felipe", "Renan", "Renata", "Gabriel"]),
 });
 
 interface LifeInsuranceQuoteFormProps {
@@ -64,7 +63,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
       standard_death_coverage: "",
       accidental_death_coverage: "",
       permanent_disability_coverage: "",
-      seller: "Felipe",
+      seller: "",
     },
   });
   
@@ -550,6 +549,7 @@ const LifeInsuranceQuoteForm = ({ onSuccess, isSubmitting = false }: LifeInsuran
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Carlos Henrique">Carlos Henrique</SelectItem>
                         <SelectItem value="Felipe">Felipe</SelectItem>
                         <SelectItem value="Renan">Renan</SelectItem>
                         <SelectItem value="Renata">Renata</SelectItem>

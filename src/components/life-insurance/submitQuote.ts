@@ -1,4 +1,3 @@
-
 import { LifeInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,7 +18,8 @@ export const submitQuote = async (
       email: formData.email,
       weight: formData.weight,
       height: formData.height,
-      monthly_income: formData.monthly_income,
+      // Format monthly income to have max 2 decimal places
+      monthly_income: formData.monthly_income ? Number(formData.monthly_income.toFixed(2)) : null,
       smoker: formData.smoker,
       practices_sports: formData.practices_sports,
       sports_description: formData.sports_description || null,
@@ -57,57 +57,51 @@ export const submitQuote = async (
           policy_file_path: policyFilePath
         }
       ])
-      .select(); // Important: include this to return the inserted data
-    
+      .select();
+
     if (quoteError) {
-      console.error("Error inserting life insurance quote:", quoteError);
-      return { success: false, error: quoteError.message };
+      console.error("Error inserting quote:", quoteError);
+      return { success: false, error: "Erro ao salvar cotação no banco de dados." };
     }
-    
-    // Send email notification
-    let policyFileData = null;
-    if (policyFile) {
-      const reader = new FileReader();
-      
-      // Convert file to base64
-      const base64File = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          const base64String = reader.result as string;
-          const base64Content = base64String.split(',')[1]; // Remove the data URL part
-          resolve(base64Content);
-        };
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(policyFile);
+
+    try {
+      // Clean values - remove undefined and special type objects
+      const cleanValues = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => {
+          if (v === undefined) return false;
+          if (v !== null && typeof v === 'object' && '_type' in v) return false;
+          return true;
+        })
+      );
+
+      // Send email notification using edge function
+      console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
+      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-life-insurance-quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
+        },
+        body: JSON.stringify({ 
+          quoteData: cleanValues,
+          policyFile: policyFilePath ? {
+            path: policyFilePath
+          } : undefined
+        })
       });
       
-      policyFileData = {
-        name: policyFile.name,
-        type: policyFile.type,
-        content: base64File
-      };
-    }
-    
-    // Call the edge function to send email
-    const { data: emailResult, error: emailError } = await supabase.functions.invoke(
-      'send-insurance-quote',
-      {
-        body: {
-          quoteData: {
-            ...quoteData,
-            insurance_type: formData.insurance_type,
-            insurance_category: 'life', // To differentiate in the email template
-          },
-          policyFile: policyFileData
-        }
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error("Email response not OK:", errorText);
+      } else {
+        const emailResult = await emailResponse.json();
+        console.log("Email sending result:", emailResult);
       }
-    );
-    
-    if (emailError) {
+    } catch (emailError) {
       console.error("Error sending email notification:", emailError);
-      // We return success even if email fails since quote is saved
-      return { success: true, error: "Cotação salva, mas houve erro no envio do email." };
+      // Continue with the operation even if email fails
     }
-    
+
     return { success: true };
   } catch (error) {
     console.error("Error submitting life insurance quote:", error);

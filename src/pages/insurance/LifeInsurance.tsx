@@ -113,7 +113,7 @@ const LifeInsurance = () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text-center flex items-center justify-center gap-2">
+            <h2 className="text-2xl font-semibold mb-6 text-feijo-darkgray text-center flex items-center justify-left gap-2">
               <FileText className="text-feijo-red" size={24} />
               Formulário para Cotação
             </h2>
