@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.36.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
@@ -204,10 +205,10 @@ serve(async (req) => {
             <div class="info-label">Tipos de Estrutura:</div>
             <div class="info-value">
               ${[
-                quoteData.structure_types.wood ? "Madeira" : null,
-                quoteData.structure_types.concrete ? "Concreto" : null,
-                quoteData.structure_types.metal ? "Metal" : null,
-                quoteData.structure_types.other ? "Outro" : null
+                quoteData.structure_types?.wood ? "Madeira" : null,
+                quoteData.structure_types?.concrete ? "Concreto" : null,
+                quoteData.structure_types?.metal ? "Metal" : null,
+                quoteData.structure_types?.other ? "Outro" : null
               ].filter(Boolean).join(", ")}
             </div>
           </div>
@@ -269,39 +270,39 @@ serve(async (req) => {
           <h2 class="section-title">Coberturas</h2>
           <div class="info-row">
             <div class="info-label">Básica:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.basic)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.basic)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Danos Materiais ao Proprietário:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.property_owner_material_damages)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.property_owner_material_damages)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Responsabilidade Civil Cruzada:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.cross_liability)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.cross_liability)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Responsabilidade Civil Empregador:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.employer_liability)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.employer_liability)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Danos Morais:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.moral_damages)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.moral_damages)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Erro de Projeto:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.project_error)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.project_error)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Vazamento de Água:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.water_leakage)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.water_leakage)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Poluição:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.pollution)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.pollution)}</div>
           </div>
           <div class="info-row">
             <div class="info-label">Danos Morais Resultantes:</div>
-            <div class="info-value">${formatCurrency(quoteData.coverage_options.resulting_moral_damages)}</div>
+            <div class="info-value">${formatCurrency(quoteData.coverage_options?.resulting_moral_damages)}</div>
           </div>
         </div>
 
@@ -355,4 +356,4 @@ serve(async (req) => {
       }
     );
   }
-}); 
+});
