@@ -20,7 +20,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
+import { formatCnpj, formatPhone } from "@/utils/formatters";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form schema with Zod validation
 const formSchema = z.object({
@@ -247,7 +248,13 @@ const BusinessInsuranceQuoteForm = ({
   // Handle CEP search
   const handleCepSearch = async (cep: string) => {
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      // Remove any non-numeric characters from CEP
+      const cleanCep = cep.replace(/\D/g, '');
+      
+      // Only proceed if we have exactly 8 digits
+      if (cleanCep.length !== 8) return;
+
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
       const data = await response.json();
       
       if (!data.erro) {
@@ -274,7 +281,25 @@ const BusinessInsuranceQuoteForm = ({
 
       // Format currency values to numeric
       const processedData = {
-        ...values,
+        insurance_type: values.insurance_type,
+        full_name: values.full_name,
+        phone: values.phone,
+        email: values.email,
+        cnpj: values.cnpj,
+        company_name: values.company_name,
+        zip_code: values.zip_code,
+        street: values.street,
+        number: values.number,
+        complement: values.complement || null,
+        neighborhood: values.neighborhood,
+        city: values.city,
+        state: values.state,
+        construction_type: values.construction_type,
+        document_number: values.cnpj,
+        main_activity: values.main_activity,
+        seller: values.seller,
+        security_equipment: selectedSecurityEquipment,
+        fire_equipment: selectedFireEquipment,
         coverage_options: {
           basic: values.coverage_options.basic ? parseFloat(values.coverage_options.basic.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
           electrical_damage: values.coverage_options.electrical_damage ? parseFloat(values.coverage_options.electrical_damage.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
@@ -284,8 +309,80 @@ const BusinessInsuranceQuoteForm = ({
           vehicle_impact: values.coverage_options.vehicle_impact ? parseFloat(values.coverage_options.vehicle_impact.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
           rent: values.coverage_options.rent ? parseFloat(values.coverage_options.rent.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
           employer_liability: values.coverage_options.employer_liability ? parseFloat(values.coverage_options.employer_liability.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+          other_coverage_notes: values.coverage_options.other_coverage_notes || null,
         },
+        additional_info: {
+          is_warehouse: values.additional_info?.is_warehouse || false,
+          is_next_to_vacant: values.additional_info?.is_next_to_vacant || false,
+          is_historical: values.additional_info?.is_historical || false,
+          has_metal_structure: values.additional_info?.has_metal_structure || false,
+          has_atm: values.additional_info?.has_atm || false,
+          has_isopanel: values.additional_info?.has_isopanel || false,
+          is_under_construction: values.additional_info?.is_under_construction || false,
+        },
+        status: 'pending',
+        created_at: new Date().toISOString(),
       };
+
+      // Upload policy file if it exists
+      let policyFilePath = null;
+      if (policyFile) {
+        const fileExt = policyFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `policies/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('business-insurance')
+          .upload(filePath, policyFile);
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        policyFilePath = filePath;
+      }
+
+      // Save to database
+      const { error: insertError } = await supabase
+        .from('business_insurance_quotes')
+        .insert([{
+          ...processedData,
+          policy_file_path: policyFilePath,
+        }]);
+
+      if (insertError) {
+        console.error("Database insert error:", insertError);
+        throw new Error("Erro ao salvar cotação no banco de dados");
+      }
+
+      // Send email using edge function
+      console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
+      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-business-insurance-quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
+        },
+        body: JSON.stringify({ 
+          quoteData: processedData,
+          policyFile: policyFile ? {
+            name: policyFile.name,
+            type: policyFile.type,
+            content: await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve((reader.result as string).split(',')[1]);
+              reader.onerror = reject;
+              reader.readAsDataURL(policyFile);
+            })
+          } : undefined
+        })
+      });
+      
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error("Email response not OK:", errorText);
+        throw new Error("Erro ao enviar email");
+      }
       
       if (onSuccess) {
         onSuccess(processedData);
@@ -294,6 +391,10 @@ const BusinessInsuranceQuoteForm = ({
         setSelectedSecurityEquipment([]);
         setSelectedFireEquipment([]);
       }
+
+      toast.success("Cotação enviada com sucesso!", {
+        description: "Nossa equipe entrará em contato em breve."
+      });
       
     } catch (error) {
       toast.error("Erro ao enviar cotação. Tente novamente.");
@@ -428,7 +529,7 @@ const BusinessInsuranceQuoteForm = ({
                   name="cnpj"
                   render={({ field }) => {
                     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                      const formatted = formatCpfCnpj(e.target.value);
+                      const formatted = formatCnpj(e.target.value);
                       field.onChange(formatted);
                     };
                     
@@ -440,6 +541,7 @@ const BusinessInsuranceQuoteForm = ({
                             {...field} 
                             onChange={handleChange}
                             value={field.value || ''}
+                            placeholder="00.000.000/0000-00"
                           />
                         </FormControl>
                         <FormMessage />
@@ -484,9 +586,17 @@ const BusinessInsuranceQuoteForm = ({
                           placeholder="00000-000" 
                           {...field}
                           onChange={(e) => {
-                            field.onChange(e);
-                            if (e.target.value.length === 9) {
-                              handleCepSearch(e.target.value);
+                            const value = e.target.value.replace(/\D/g, '');
+                            const formattedValue = value
+                              .replace(/^(\d{5})(\d)/, '$1-$2')
+                              .replace(/[^\d-]/, '')
+                              .slice(0, 9);
+                            
+                            field.onChange(formattedValue);
+                            
+                            // Call handleCepSearch when we have 8 digits
+                            if (value.length === 8) {
+                              handleCepSearch(value);
                             }
                           }}
                         />
