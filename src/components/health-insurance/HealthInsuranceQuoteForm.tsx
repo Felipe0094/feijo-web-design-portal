@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,18 +14,28 @@ import { toast } from "sonner";
 import { Users, Plus, Trash2, User, CarFront, Home, FileText, Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { HealthInsuranceFormData, Dependent } from './types';
-import { formatCpfCnpj, formatPhone } from "@/utils/formatters";
+import { formatCnpj, formatPhone, formatCpfCnpj } from "@/utils/formatters";
 
 
 
 // Updated the formSchema to match the required fields in HealthInsuranceFormData
 const formSchema = z.object({
-  document_number: z.string().min(1, "CNPJ é obrigatório"),
+  document_number: z.string()
+    .min(18, "CNPJ inválido")
+    .max(18, "CNPJ inválido")
+    .refine((val) => /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(val), {
+      message: "CNPJ inválido"
+    }),
   responsible_name: z.string().min(1, "Nome do responsável é obrigatório"),
   phone: z.string().min(1, "Telefone é obrigatório"),
   email: z.string().email("Email inválido"),
   insured_name: z.string().min(1, "Nome do segurado é obrigatório"),
-  insured_cpf: z.string().min(1, "CPF do segurado é obrigatório"),
+  insured_cpf: z.string()
+    .min(14, "CPF inválido")
+    .max(14, "CPF inválido")
+    .refine((val) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(val), {
+      message: "CPF inválido"
+    }),
   insured_birth_date: z.string().min(1, "Data de nascimento do segurado é obrigatória"),
   municipality: z.string().min(1, "Município é obrigatório"),
   room_type: z.enum(["individual", "shared"]),
@@ -36,13 +45,23 @@ const formSchema = z.object({
     z.object({
       id: z.string(),
       name: z.string().min(1, "Nome do dependente é obrigatório"),
-      cpf: z.string().min(1, "CPF do dependente é obrigatório"),
+      cpf: z.string()
+        .min(14, "CPF inválido")
+        .max(14, "CPF inválido")
+        .refine((val) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(val), {
+          message: "CPF inválido"
+        }),
       birth_date: z.string().min(1, "Data de nascimento do dependente é obrigatória"),
       age: z.number().optional(),
     })
   ),
-  seller: z.enum(["Felipe", "Renan", "Renata", "Gabriel"]),
+  seller: z.enum(["Carlos Henrique", "Felipe", "Gabriel", "Renan", "Renata"], {
+    required_error: "Por favor selecione um consultor",
+    invalid_type_error: "Por favor selecione um consultor válido",
+  }),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 interface HealthInsuranceQuoteFormProps {
   onSuccess?: (data: HealthInsuranceFormData) => void;
@@ -53,7 +72,7 @@ interface HealthInsuranceQuoteFormProps {
 const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = false }: HealthInsuranceQuoteFormProps) => {
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       document_number: "",
@@ -68,7 +87,7 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
       has_copayment: "no",
       notes: "",
       dependents: [],
-      seller: "Carlos Henrique",
+      seller: undefined,
     },
   });
 
@@ -97,7 +116,7 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
     }
   };
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     try {
       setLocalIsSubmitting(true);
       if (!values.document_number || !values.responsible_name || !values.email || !values.phone || !values.insured_name || !values.insured_cpf || !values.insured_birth_date || !values.municipality) {
@@ -178,7 +197,7 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                   name="document_number"
                   render={({ field }) => {
                     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                      const formatted = formatCpfCnpj(e.target.value);
+                      const formatted = formatCnpj(e.target.value);
                       field.onChange(formatted);
                     };
                     
@@ -186,7 +205,13 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                       <FormItem>
                         <FormLabel>CNPJ*</FormLabel>
                         <FormControl>
-                          <Input {...field} onChange={handleChange} value={field.value || ''} />
+                          <Input 
+                            {...field} 
+                            onChange={handleChange} 
+                            value={field.value || ''} 
+                            placeholder="99.999.999/9999-99"
+                            maxLength={18}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -267,7 +292,12 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                     <FormItem>
                       <FormLabel>CPF do Segurado*</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
+                          placeholder="000.000.000-00"
+                          maxLength={14}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -408,7 +438,12 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                         <FormItem>
                           <FormLabel>CPF</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input 
+                              {...field}
+                              onChange={(e) => field.onChange(formatCpfCnpj(e.target.value))}
+                              placeholder="000.000.000-00"
+                              maxLength={14}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -484,7 +519,10 @@ const HealthInsuranceQuoteForm = ({ onSuccess, onFileChange, isSubmitting = fals
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Consultor*</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value || undefined}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o consultor" />

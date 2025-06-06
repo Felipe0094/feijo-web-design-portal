@@ -1,6 +1,5 @@
-
-import { HealthInsuranceFormData } from "./types";
 import { supabase } from "@/integrations/supabase/client";
+import { HealthInsuranceFormData } from "./types";
 
 export const submitQuote = async (
   formData: HealthInsuranceFormData,
@@ -9,50 +8,18 @@ export const submitQuote = async (
   try {
     console.log("Submitting health insurance quote:", formData);
     
-    // Process the quote data
-    let quoteData = {
-      document_number: formData.document_number,
-      responsible_name: formData.responsible_name,
-      phone: formData.phone,
-      email: formData.email,
-      insured_name: formData.insured_name,
-      insured_cpf: formData.insured_cpf,
-      insured_birth_date: formData.insured_birth_date,
-      insured_age: formData.insured_age || null,
-      municipality: formData.municipality,
-      room_type: formData.room_type,
+    // Clean and prepare quote data - remove dependents as they go in a separate table
+    const { dependents, ...quoteFields } = formData;
+    const quoteData = {
+      ...quoteFields,
       has_copayment: formData.has_copayment === 'yes',
-      notes: formData.notes || null,
-      seller: formData.seller
+      created_at: new Date().toISOString(),
     };
     
-    // Upload file if exists
-    let currentPlanFilePath = null;
-    if (currentPlanFile) {
-      const fileName = `${Date.now()}_${currentPlanFile.name.replace(/\s+/g, '_')}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('health_insurance_files')
-        .upload(fileName, currentPlanFile);
-      
-      if (uploadError) {
-        console.error("Error uploading file:", uploadError);
-        return { success: false, error: "Erro ao enviar arquivo da apólice atual." };
-      }
-      
-      if (uploadData) {
-        currentPlanFilePath = fileName;
-      }
-    }
-    
-    // Insert quote into the database
+    // Insert quote into database
     const { data: quoteResult, error: quoteError } = await supabase
       .from('health_insurance_quotes')
-      .insert([
-        {
-          ...quoteData,
-          current_plan_file_path: currentPlanFilePath
-        }
-      ])
+      .insert([quoteData])
       .select();
     
     if (quoteError) {
@@ -61,17 +28,17 @@ export const submitQuote = async (
     }
     
     // Process dependents if any
-    if (formData.dependents && formData.dependents.length > 0 && quoteResult && quoteResult[0]) {
+    if (dependents && dependents.length > 0 && quoteResult && quoteResult[0]) {
       const quoteId = quoteResult[0].id;
       
-      // Prepare dependents data - ensure all required fields are included
-      const dependentsData = formData.dependents.map(dep => ({
+      // Prepare dependents data
+      const dependentsData = dependents.map(dep => ({
         quote_id: quoteId,
         name: dep.name,
         cpf: dep.cpf,
         birth_date: dep.birth_date,
         age: dep.age || null,
-        id: dep.id // Ensure id is explicitly included
+        id: dep.id
       }));
       
       // Insert dependents
@@ -108,17 +75,15 @@ export const submitQuote = async (
       };
     }
     
-    // Call the edge function to send email
+    // Call the new Edge Function to send email
     const { data: emailResult, error: emailError } = await supabase.functions.invoke(
-      'send-insurance-quote',
+      'send-health-insurance-quote',
       {
         body: {
           quoteData: {
             ...quoteData,
-            dependents: formData.dependents,
-            insurance_type: 'health', // To differentiate in the email template
-          },
-          policyFile
+            dependents: dependents
+          }
         }
       }
     );
