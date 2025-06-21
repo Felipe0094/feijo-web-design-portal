@@ -64,7 +64,7 @@ const HeroSection = () => {
                         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-[#FA0108] ">
                             FEIJÓ SEGUROS
                         </h1>
-                        <h1 className="text-xl md:text-3xl font-bold mb-4 text-[#45484A] ">
+                        <h1 className="text-l md:text-3xl font-bold mb-4 text-[#45484A] ">
                             Proteção e segurança para o que importa
                         </h1>
                         <p className="text-base md:text-lg mb-6 text-[#45484A]">
