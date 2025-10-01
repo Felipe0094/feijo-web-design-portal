@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.VITE_RESEND_API_KEY);
+// No Vercel, variáveis de ambiente não precisam do prefixo VITE_ para serverless functions
+const resend = new Resend(process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY);
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -22,6 +23,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Verificar se a API key está configurada
+    const apiKey = process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY;
+    if (!apiKey) {
+      console.error('RESEND_API_KEY not configured');
+      return res.status(500).json({
+        success: false,
+        error: 'Email service not configured'
+      });
+    }
+
     const { to, subject, html, attachments } = req.body;
 
     if (!to || !subject || !html) {
