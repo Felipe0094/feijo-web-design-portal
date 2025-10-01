@@ -1,7 +1,23 @@
 import { Resend } from 'resend';
 
+// Debug: Verificar variáveis de ambiente disponíveis
+console.log('=== DEBUG VARIÁVEIS DE AMBIENTE ===');
+console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'CONFIGURADA' : 'NÃO ENCONTRADA');
+console.log('Resend_API_Key:', process.env.Resend_API_Key ? 'CONFIGURADA' : 'NÃO ENCONTRADA');
+console.log('VITE_RESEND_API_KEY:', process.env.VITE_RESEND_API_KEY ? 'CONFIGURADA' : 'NÃO ENCONTRADA');
+
+// Tentar diferentes variações do nome da variável
+const apiKey = process.env.RESEND_API_KEY || process.env.Resend_API_Key || process.env.VITE_RESEND_API_KEY;
+
+console.log('API Key encontrada:', apiKey ? `Sim (${apiKey.substring(0, 8)}...)` : 'NÃO');
+
+if (!apiKey) {
+  console.error('ERRO: Nenhuma API key encontrada nas variáveis de ambiente');
+  console.log('Variáveis disponíveis:', Object.keys(process.env).filter(key => key.toLowerCase().includes('resend')));
+}
+
 // No Vercel, variáveis de ambiente não precisam do prefixo VITE_ para serverless functions
-const resend = new Resend(process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY);
+const resend = new Resend(apiKey);
 
 export default async function handler(req, res) {
   // Set CORS headers
