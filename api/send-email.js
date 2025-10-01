@@ -39,10 +39,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Debug: Log environment variables (sem expor a chave completa)
-    const apiKey = process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY;
+    // Debug: Log environment variables (sem expor a chave completa) - usando a mesma variável do topo
     console.log('Environment check:', {
       hasResendApiKey: !!process.env.RESEND_API_KEY,
+      hasResendApiKeyCase: !!process.env.Resend_API_Key,
       hasViteResendApiKey: !!process.env.VITE_RESEND_API_KEY,
       apiKeyLength: apiKey ? apiKey.length : 0,
       apiKeyPrefix: apiKey ? apiKey.substring(0, 3) + '...' : 'none'
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
 
     // Verificar se a API key está configurada
     if (!apiKey) {
-      console.error('RESEND_API_KEY not configured');
+      console.error('Nenhuma API key encontrada nas variáveis de ambiente');
       return res.status(500).json({
         success: false,
         error: 'Email service not configured - API key missing'
