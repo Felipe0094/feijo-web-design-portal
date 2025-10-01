@@ -23,17 +23,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Verificar se a API key está configurada
+    // Debug: Log environment variables (sem expor a chave completa)
     const apiKey = process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY;
+    console.log('Environment check:', {
+      hasResendApiKey: !!process.env.RESEND_API_KEY,
+      hasViteResendApiKey: !!process.env.VITE_RESEND_API_KEY,
+      apiKeyLength: apiKey ? apiKey.length : 0,
+      apiKeyPrefix: apiKey ? apiKey.substring(0, 3) + '...' : 'none'
+    });
+
+    // Verificar se a API key está configurada
     if (!apiKey) {
       console.error('RESEND_API_KEY not configured');
       return res.status(500).json({
         success: false,
-        error: 'Email service not configured'
+        error: 'Email service not configured - API key missing'
       });
     }
 
     const { to, subject, html, attachments } = req.body;
+
+    console.log('Request body received:', {
+      hasTo: !!to,
+      hasSubject: !!subject,
+      hasHtml: !!html,
+      hasAttachments: !!attachments
+    });
 
     if (!to || !subject || !html) {
       return res.status(400).json({
@@ -58,6 +73,14 @@ export default async function handler(req, res) {
       }));
     }
 
+    console.log('Sending email with payload:', {
+      from: payload.from,
+      to: payload.to,
+      subject: payload.subject,
+      hasHtml: !!payload.html,
+      attachmentCount: payload.attachments ? payload.attachments.length : 0
+    });
+
     const result = await resend.emails.send(payload);
 
     if (result.error) {
@@ -68,6 +91,8 @@ export default async function handler(req, res) {
       });
     }
 
+    console.log('Email sent successfully:', result.data);
+
     return res.status(200).json({
       success: true,
       data: result.data
@@ -77,7 +102,8 @@ export default async function handler(req, res) {
     console.error('Email sending error:', error);
     return res.status(500).json({
       success: false,
-      error: error.message || 'Internal server error'
+      error: error.message || 'Internal server error',
+      details: error.stack
     });
   }
 }
