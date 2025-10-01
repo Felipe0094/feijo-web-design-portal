@@ -41,7 +41,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-feijo-darkgray sticky top-0 z-50 shadow-sm">
+    <nav className="bg-gradient-to-b from-black to-feijo-darkgray sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-2 py-2 flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/">

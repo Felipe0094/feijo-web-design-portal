@@ -96,7 +96,7 @@ const InsuranceSection = () => {
   ];
 
   return (
-    <section id="services" className="py-16 bg-feijo-darkgray">
+    <section id="services" className="py-16 bg-gradient-to-b from-feijo-darkgray via-black to-feijo-darkgray">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center text-white">Faça sua cotação aqui!</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
