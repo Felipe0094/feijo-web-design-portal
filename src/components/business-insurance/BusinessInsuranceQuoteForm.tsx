@@ -21,7 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatCnpj, formatPhone } from "@/utils/formatters";
-import { supabase } from "@/integrations/supabase/client";
+import { sendEmail } from "@/lib/email-service";
 
 // Form schema with Zod validation
 const formSchema = z.object({
@@ -324,65 +324,28 @@ const BusinessInsuranceQuoteForm = ({
         created_at: new Date().toISOString(),
       };
 
-      // Upload policy file if it exists
-      let policyFilePath = null;
-      if (policyFile) {
-        const fileExt = policyFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `policies/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('business-insurance')
-          .upload(filePath, policyFile);
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-        policyFilePath = filePath;
-      }
-
-      // Save to database
-      const { error: insertError } = await supabase
-        .from('business_insurance_quotes')
-        .insert([{
-          ...processedData,
-          policy_file_path: policyFilePath,
-        }]);
-
-      if (insertError) {
-        console.error("Database insert error:", insertError);
-        throw new Error("Erro ao salvar cotação no banco de dados");
-      }
-
-      // Send email using edge function
+      // Send email notification
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
-      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-business-insurance-quote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
-        },
-        body: JSON.stringify({ 
-          quoteData: processedData,
-          policyFile: policyFile ? {
-            name: policyFile.name,
-            type: policyFile.type,
-            content: await new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve((reader.result as string).split(',')[1]);
-              reader.onerror = reject;
-              reader.readAsDataURL(policyFile);
-            })
-          } : undefined
-        })
-      });
       
-      if (!emailResponse.ok) {
-        const errorText = await emailResponse.text();
-        console.error("Email response not OK:", errorText);
-        throw new Error("Erro ao enviar email");
+      const emailData = {
+        quoteData: processedData,
+        quoteType: 'business-insurance',
+        policyFile: policyFile ? {
+          name: policyFile.name,
+          size: policyFile.size,
+          type: policyFile.type
+        } : undefined
+      };
+
+      const emailResult = await sendEmail(emailData);
+      
+      if (!emailResult.success) {
+        console.error("Erro ao enviar email:", emailResult.error);
+        toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
+        throw new Error(emailResult.error);
       }
+
+      console.log("Email enviado com sucesso:", emailResult);
       
       if (onSuccess) {
         onSuccess(processedData);

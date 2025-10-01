@@ -1,7 +1,7 @@
 
-import { supabase } from '@/integrations/supabase/client';
 import { CivilWorksInsuranceFormData } from './types';
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email-service";
 
 export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFormData) => {
   try {
@@ -22,49 +22,28 @@ export const submitCivilWorksInsuranceQuote = async (data: CivilWorksInsuranceFo
       )
     };
 
-    // Insert into database
-    const { error: dbError, data: insertedData } = await supabase
-      .from('civil_works_insurance_quotes')
-      .insert(cleanValues)
-      .select();
+    // Send email notification
+    console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
+    
+    const emailData = {
+      quoteData: cleanValues,
+      quoteType: 'civil-works-insurance'
+    };
 
-    if (dbError) {
-      console.error('Database error:', dbError);
+    const emailResult = await sendEmail(emailData);
+    
+    if (!emailResult.success) {
+      console.error("Erro ao enviar email:", emailResult.error);
       toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
-      throw new Error(`Error submitting civil works insurance quote: ${dbError.message}`);
+      throw new Error(emailResult.error);
     }
 
-    try {
-      // Send email notification via edge function
-      console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
-      const emailResponse = await fetch('https://ocapqzfqqgjcqohlomva.supabase.co/functions/v1/send-civil-works-insurance-quote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYXBxemZxcWdqY3FvaGxvbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NzY2OTYsImV4cCI6MjA2MTI1MjY5Nn0.BJVh01h7-s2aFsNdv_wIHm58CmuNxP70_5qfPuVPd4o`
-        },
-        body: JSON.stringify({ 
-          quoteData: cleanValues,
-          quoteType: 'civil-works-insurance'
-        })
-      });
-      
-      if (!emailResponse.ok) {
-        const errorText = await emailResponse.text();
-        console.error("Email response not OK:", errorText);
-      } else {
-        const emailResult = await emailResponse.json();
-        console.log("Email sending result:", emailResult);
-      }
-    } catch (emailError) {
-      console.error("Erro ao enviar email:", emailError);
-      // Continue with the operation even if email sending fails
-    }
-
+    console.log("Email enviado com sucesso:", emailResult);
     toast.success("Cotação enviada com sucesso! Em breve entraremos em contato.");
-    return { success: true, data: insertedData };
+    return { success: true };
   } catch (error) {
     console.error("Error in submitCivilWorksInsuranceQuote:", error);
+    toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
     return { 
       success: false, 
       error: error instanceof Error ? error.message : "Unknown error occurred" 
