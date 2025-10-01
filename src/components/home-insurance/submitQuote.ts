@@ -21,14 +21,25 @@ export async function submitHomeInsuranceQuote(
     // Send email notification
     console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
     
+    // Format email data properly
     const emailData = {
-      quoteData: cleanValues,
-      quoteType: 'home-insurance',
-      policyFile: policyFile ? {
-        name: policyFile.name,
-        size: policyFile.size,
+      to: ["cotacoes.feijocorretora@gmail.com"],
+      subject: "Nova Cotação - Seguro Residencial",
+      html: `
+        <h2>Nova Cotação de Seguro Residencial</h2>
+        <h3>Dados do Cliente:</h3>
+        <ul>
+          ${Object.entries(cleanValues).map(([key, value]) => 
+            `<li><strong>${key}:</strong> ${value}</li>`
+          ).join('')}
+        </ul>
+        ${policyFile ? `<p><strong>Arquivo anexado:</strong> ${policyFile.name} (${policyFile.size} bytes)</p>` : ''}
+      `,
+      attachments: policyFile ? [{
+        filename: policyFile.name,
+        content: await fileToBase64(policyFile),
         type: policyFile.type
-      } : undefined
+      }] : undefined
     };
 
     const emailResult = await sendEmail(emailData);
@@ -50,4 +61,19 @@ export async function submitHomeInsuranceQuote(
       error: error instanceof Error ? error.message : "Unknown error occurred" 
     };
   }
+}
+
+// Helper function to convert file to base64
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove the data:mime/type;base64, prefix
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = error => reject(error);
+  });
 }

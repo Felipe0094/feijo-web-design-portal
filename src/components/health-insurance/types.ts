@@ -5,6 +5,7 @@ export interface Dependent {
   cpf: string;
   birth_date: string;
   age?: number;
+  relationship?: string;
 }
 
 export interface HealthInsuranceFormData {

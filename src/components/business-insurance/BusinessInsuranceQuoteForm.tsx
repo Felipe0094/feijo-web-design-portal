@@ -23,6 +23,280 @@ import {
 import { formatCnpj, formatPhone } from "@/utils/formatters";
 import { sendEmail } from "@/lib/email-service";
 
+// Função para gerar o conteúdo HTML do email
+const generateEmailContent = (quoteData: any) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Nova Cotação de Seguro Empresarial</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #FA0108;
+          color: white;
+          padding: 20px;
+          text-align: center;
+          border-radius: 5px 5px 0 0;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+          border-radius: 0 0 5px 5px;
+        }
+        .section {
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        .section-title {
+          color: #544f4f;
+          border-bottom: 2px solid #FA0108;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+          font-size: 18px;
+          font-weight: bold;
+        }
+        .info-row {
+          display: flex;
+          margin-bottom: 10px;
+          padding: 5px 0;
+        }
+        .info-label {
+          font-weight: bold;
+          width: 200px;
+          color: #666;
+          flex-shrink: 0;
+        }
+        .info-value {
+          flex: 1;
+        }
+        .footer {
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          color: #666;
+          font-size: 14px;
+          text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>Nova Cotação de Seguro Empresarial</h1>
+      </div>
+      <div class="content">
+        <div class="section">
+          <div class="section-title">Informações da Empresa</div>
+          <div class="info-row">
+            <div class="info-label">Nome da Empresa:</div>
+            <div class="info-value">${quoteData.company_name || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">CNPJ:</div>
+            <div class="info-value">${quoteData.cnpj || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Atividade Principal:</div>
+            <div class="info-value">${quoteData.main_activity || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tipo de Seguro:</div>
+            <div class="info-value">${quoteData.insurance_type === 'new' ? 'Seguro Novo' : 'Renovação'}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Informações do Responsável</div>
+          <div class="info-row">
+            <div class="info-label">Nome Completo:</div>
+            <div class="info-value">${quoteData.full_name || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Email:</div>
+            <div class="info-value">${quoteData.email || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Telefone:</div>
+            <div class="info-value">${quoteData.phone || 'Não informado'}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Endereço da Empresa</div>
+          <div class="info-row">
+            <div class="info-label">CEP:</div>
+            <div class="info-value">${quoteData.zip_code || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Logradouro:</div>
+            <div class="info-value">${quoteData.street || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Número:</div>
+            <div class="info-value">${quoteData.number || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Complemento:</div>
+            <div class="info-value">${quoteData.complement || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Bairro:</div>
+            <div class="info-value">${quoteData.neighborhood || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Cidade:</div>
+            <div class="info-value">${quoteData.city || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Estado:</div>
+            <div class="info-value">${quoteData.state || 'Não informado'}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Informações do Imóvel</div>
+          <div class="info-row">
+            <div class="info-label">Andar:</div>
+            <div class="info-value">${quoteData.floor === 'ground' ? 'Térreo' : quoteData.floor === 'first' ? '1º Andar' : '2º Andar ou superior'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Ano de Construção:</div>
+            <div class="info-value">${quoteData.construction_year || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tipo de Construção:</div>
+            <div class="info-value">${quoteData.construction_type || 'Não informado'}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tipo de Localização:</div>
+            <div class="info-value">${quoteData.location_type || 'Não informado'}</div>
+          </div>
+        </div>
+
+        ${quoteData.security_equipment && quoteData.security_equipment.length > 0 ? `
+        <div class="section">
+          <div class="section-title">Equipamentos de Segurança</div>
+          <div class="info-row">
+            <div class="info-label">Equipamentos:</div>
+            <div class="info-value">${quoteData.security_equipment.join(', ')}</div>
+          </div>
+        </div>
+        ` : ''}
+
+        ${quoteData.fire_equipment && quoteData.fire_equipment.length > 0 ? `
+        <div class="section">
+          <div class="section-title">Equipamentos de Combate a Incêndio</div>
+          <div class="info-row">
+            <div class="info-label">Equipamentos:</div>
+            <div class="info-value">${quoteData.fire_equipment.join(', ')}</div>
+          </div>
+        </div>
+        ` : ''}
+
+        ${quoteData.coverage_options ? `
+        <div class="section">
+          <div class="section-title">Coberturas Desejadas</div>
+          ${quoteData.coverage_options.basic ? `
+          <div class="info-row">
+            <div class="info-label">Básica:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.basic}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.electrical_damage ? `
+          <div class="info-row">
+            <div class="info-label">Danos Elétricos:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.electrical_damage}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.glass ? `
+          <div class="info-row">
+            <div class="info-label">Vidros:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.glass}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.theft ? `
+          <div class="info-row">
+            <div class="info-label">Roubo:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.theft}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.equipment ? `
+          <div class="info-row">
+            <div class="info-label">Equipamentos:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.equipment}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.vehicle_impact ? `
+          <div class="info-row">
+            <div class="info-label">Impacto de Veículos:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.vehicle_impact}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.rent ? `
+          <div class="info-row">
+            <div class="info-label">Aluguel:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.rent}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.employer_liability ? `
+          <div class="info-row">
+            <div class="info-label">Responsabilidade Civil do Empregador:</div>
+            <div class="info-value">R$ ${quoteData.coverage_options.employer_liability}</div>
+          </div>
+          ` : ''}
+          ${quoteData.coverage_options.other_coverage_notes ? `
+          <div class="info-row">
+            <div class="info-label">Outras Coberturas:</div>
+            <div class="info-value">${quoteData.coverage_options.other_coverage_notes}</div>
+          </div>
+          ` : ''}
+        </div>
+        ` : ''}
+
+        <div class="section">
+          <div class="section-title">Consultor Responsável</div>
+          <div class="info-row">
+            <div class="info-label">Consultor:</div>
+            <div class="info-value">${quoteData.seller || 'Não informado'}</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Esta cotação foi gerada automaticamente pelo sistema Feijó Corretora de Seguros.</p>
+          <p>Para mais informações, entre em contato conosco.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Helper function to convert file to base64
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove the data:mime/type;base64, prefix
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = error => reject(error);
+  });
+}
+
 // Form schema with Zod validation
 const formSchema = z.object({
   insurance_type: z.enum(["new", "renewal"]),
@@ -327,14 +601,16 @@ const BusinessInsuranceQuoteForm = ({
       // Send email notification
       console.log("Enviando email para cotacoes.feijocorretora@gmail.com");
       
+      // Format email data properly
       const emailData = {
-        quoteData: processedData,
-        quoteType: 'business-insurance',
-        policyFile: policyFile ? {
-          name: policyFile.name,
-          size: policyFile.size,
+        to: ["cotacoes.feijocorretora@gmail.com"],
+        subject: "Nova Cotação - Seguro Empresarial",
+        html: generateEmailContent(processedData),
+        attachments: policyFile ? [{
+          filename: policyFile.name,
+          content: await fileToBase64(policyFile),
           type: policyFile.type
-        } : undefined
+        }] : undefined
       };
 
       const emailResult = await sendEmail(emailData);
@@ -342,7 +618,7 @@ const BusinessInsuranceQuoteForm = ({
       if (!emailResult.success) {
         console.error("Erro ao enviar email:", emailResult.error);
         toast.error("Erro ao enviar cotação. Por favor, tente novamente mais tarde.");
-        throw new Error(emailResult.error);
+        return { success: false, error: emailResult.error };
       }
 
       console.log("Email enviado com sucesso:", emailResult);
